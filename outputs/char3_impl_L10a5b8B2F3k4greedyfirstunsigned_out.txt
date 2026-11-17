@@ -1,0 +1,14 @@
+Full product, characteristic 3: L=10 a=5 b=8 s=2d=4 d=2 D=3^d=9 B=2 inputs=F3 E=GF(3^4) (h=[2, 0, 0, 1, 1], g=X) zmode=greedy schedule=first control=unsigned seed=1
+P3 check over Z: signed form = T4 - E3: True; plus-sign form minus (T4 + E3) = {'x1y0w0': np.int64(2), 'x0y0w0': np.int64(2), 'x0y1w0': np.int64(2)}
+N_r = 504 (N0r = C(L,a) = 252), N_c = 90 (N0c = C(L,b) = 45); direct product computed
+covering: max_S Delta(S) = 16; greedy hitting set over E^* (80 candidates): Z = [3] (logs [1]), 1 values; bound log2 C(L,2d)+1 = 8 (valid as q-1 >= 2 Delta = 32: True); preprocessing field operations {'mul': 88640, 'add': 39600, 'neg': 20800, 'inv': 0}
+set-up per z: z=3 (log 1): 0 of 210 sets S bad
+sets S bad for every z in Z: 0
+Pi_L: 90 relabelings; covering table over 1 x 90 (z, pi): 0 of 11340 label pairs uncovered; first-covering (z, pi) runs: 36; per z: [36]; bit-operation table 1020600 popcount/lookups
+end to end: 45360 of 45360 entries computed; wrong entries of the assembled product: 29278 (of which not computed: 0); class outputs of every executed tile-run: good S 907200 checked, 585073 wrong; bad S (c_z(S) = 0) 0 checked, 0 with raw value != 0
+time 40.9s for 36 (z, pi) runs x 4 band pairs
+counted (schedule first, 1 z, 36 (z, pi) runs): mul 151991596, add 1279319011, neg 260, inv 210, total 1431311077; formula mul 151991596, add 1279319011, neg 260, inv 210, total 1431311077; equal: True; per entry 31554.48; trivial 2D-1 = 17
+   formula parts: forms_mul=8, table_mul=1100, table_add=495, sign_neg=260, inv=210, readL_mul=33264, readL_add=17640, readR_mul=916920, readR_add=388800, enc_add=146449996, leaf_mul=150994944, dec_add=1132462080, div_mul=45360
+formula for schedule all (1 z x 90 relabelings): total 3572193025, per entry 78752.05
+control (no division by c_z(S)): 39814 of 45360 computed entries wrong (0 expected only when every c_z(S) used is 1)
+total wall time 42.5s

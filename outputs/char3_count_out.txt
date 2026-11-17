@@ -1,0 +1,21 @@
+Characteristic 3: exact count at L = 8d, a = b = L/2 (char3_count.py)
+closed forms M3, npairs, nminus = brute force for d = 1..5: True
+L=8 d=1 B=1 K_z=1: this script = pipeline formula: True
+L=8 d=1 B=2 K_z=3: this script = pipeline formula: True
+L=16 d=2 B=1 K_z=1: this script = pipeline formula: True
+L=16 d=2 B=2 K_z=3: this script = pipeline formula: True
+L=24 d=3 B=1 K_z=1: this script = pipeline formula: True
+L=24 d=3 B=2 K_z=3: this script = pipeline formula: True
+L, d, per entry (B=1, K_z=1), per entry / L^4, leading K(1+3L/4)4^L/N0^2 / L^4, parts per entry: leaf+dec, enc, read, set-up, div
+L=  8 d= 1: per entry 6624.92, /L^4 = 1.61741, leading/L^4 = 1.28000; leaf+dec 5243, enc 1372, read 8.96, set-up 0.0147, div 1
+L= 16 d= 2: per entry 93283.2, /L^4 = 1.42339, leading/L^4 = 1.23446; leaf+dec 8.09e+04, enc 1.237e+04, read 7.55, set-up 7.51e-05, div 1
+L= 24 d= 3: per entry 446243, /L^4 = 1.34501, leading/L^4 = 1.21681; leaf+dec 4.037e+05, enc 4.253e+04, read 2.86, set-up 2.59e-07, div 1
+L= 32 d= 4: per entry 1.3676e+06, /L^4 = 1.30425, leading/L^4 = 1.20755; leaf+dec 1.266e+06, enc 1.014e+05, read 0.772, set-up 7.54e-10, div 1
+L= 40 d= 5: per entry 3.27539e+06, /L^4 = 1.27945, leading/L^4 = 1.20186; leaf+dec 3.077e+06, enc 1.986e+05, read 0.175, set-up 2e-12, div 1
+L= 48 d= 6: per entry 6.70345e+06, /L^4 = 1.26280, leading/L^4 = 1.19801; leaf+dec 6.36e+06, enc 3.439e+05, read 0.0356, set-up 5.01e-15, div 1
+L= 56 d= 7: per entry 1.23014e+07, /L^4 = 1.25084, leading/L^4 = 1.19523; leaf+dec 1.175e+07, enc 5.469e+05, read 0.00678, set-up 1.2e-17, div 1
+L= 64 d= 8: per entry 2.08347e+07, /L^4 = 1.24185, leading/L^4 = 1.19313; leaf+dec 2.002e+07, enc 8.172e+05, read 0.00123, set-up 2.8e-20, div 1
+L=128 d=16: per entry 3.24845e+08, /L^4 = 1.21014, leading/L^4 = 1.18569; leaf+dec 3.183e+08, enc 6.563e+06, read 6.57e-10, set-up 1.37e-41, div 1
+L=192 d=24: per entry 1.63006e+09, /L^4 = 1.19950, leading/L^4 = 1.18318; leaf+dec 1.608e+09, enc 2.218e+07, read 1.95e-16, set-up 4.33e-63, div 1
+L=256 d=32: per entry 5.12888e+09, /L^4 = 1.19416, leading/L^4 = 1.18191; leaf+dec 5.076e+09, enc 5.26e+07, read 4.56e-23, set-up 1.14e-84, div 1
+max over L = 8d <= 256 of (per entry at K_z = 1, B = 1)/L^4: 1.61741 at L = 8

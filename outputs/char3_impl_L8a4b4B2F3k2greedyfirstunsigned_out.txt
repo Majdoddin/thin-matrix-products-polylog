@@ -1,0 +1,14 @@
+Full product, characteristic 3: L=8 a=4 b=4 s=2d=2 d=1 D=3^d=3 B=2 inputs=F3 E=GF(3^2) (h=[2, 1, 1], g=X) zmode=greedy schedule=first control=unsigned seed=1
+P3 check over Z: signed form = T4 - E3: True; plus-sign form minus (T4 + E3) = {'x1y0w0': np.int64(2), 'x0y0w0': np.int64(2), 'x0y1w0': np.int64(2)}
+N_r = 140 (N0r = C(L,a) = 70), N_c = 140 (N0c = C(L,b) = 70); direct product computed
+covering: max_S Delta(S) = 0; d = 1: forms (1), c(S) = 1 for every S; Z = (1); preprocessing field operations {'mul': 0, 'add': 0, 'neg': 0, 'inv': 0}
+set-up per z: z=1 (log 0): 0 of 28 sets S bad
+sets S bad for every z in Z: 0
+Pi_L: 56 relabelings; covering table over 1 x 56 (z, pi): 0 of 4900 label pairs uncovered; first-covering (z, pi) runs: 21; per z: [21]; bit-operation table 274400 popcount/lookups
+end to end: 19600 of 19600 entries computed; wrong entries of the assembled product: 8930 (of which not computed: 0); class outputs of every executed tile-run: good S 211680 checked, 96456 wrong; bad S (c_z(S) = 0) 0 checked, 0 with raw value != 0
+time 0.8s for 21 (z, pi) runs x 4 band pairs
+counted (schedule first, 1 z, 21 (z, pi) runs): mul 5558540, add 38219944, neg 8, inv 28, total 43778520; formula mul 5558540, add 38219944, neg 8, inv 28, total 43778520; equal: True; per entry 2233.60; trivial 2D-1 = 5
+   formula parts: forms_mul=0, table_mul=36, table_add=0, sign_neg=8, inv=28, readL_mul=1540, readL_add=0, readR_mul=32340, readR_add=0, enc_add=5189800, leaf_mul=5505024, dec_add=33030144, div_mul=19600
+formula for schedule all (1 z x 56 relabelings): total 116314200, per entry 5934.40
+control (no division by c_z(S)): 8930 of 19600 computed entries wrong (0 expected only when every c_z(S) used is 1)
+total wall time 0.8s

@@ -1,0 +1,8 @@
+L=9 a=6 b=6 d=2 D=9 E=GF(3^4) Nr x Nc = 84 x 84 inputs=E schedule=first control=unsigned Delta_L=16
+Covering check (Lemma 3.3): every (row, column) pair meets in exactly 2d = 4 levels under some pi in Pi_L: True
+Z = [2, 15, 4] (|Z0| = 32; greedy rounds bound 7); bad sets per z: [66, 30, 0] of 126 (0.0s)
+covering: every entry has some (z, pi) with |S| = 2d and c_z(S) != 0: True
+tile-runs executed: 77 of 216
+class outputs checked 291060, wrong 154856; of them at bad S (c_z(S) = 0): 134100, raw value != 0: 0
+assembled product: entries 7056, computed 7056, wrong 6962
+time 2.6s

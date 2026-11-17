@@ -1,0 +1,18 @@
+T6 monomials present with coefficient 1: True
+product monomials 38  of E6 30
+weight 0 on T6: True  min weight on E6: 1
+expansion equals that of the data file: True
+grading equals the data file: True {'w00': -1, 'z01': 5, 'z02': 4, 'z10': 1, 'z11': 7, 'z12': 6}
+z01  class (0,0) weight 6 : +o0y0 +p0q0 -x0q0 +x0y0
+z01  class (0,2) weight 1 : -x0y2
+z01  class (1,0) weight 4 : -x1q0
+z02  class (0,0) weight 5 : +o0y0 -p0q0 +p0y0 +x0r0 -x0y0
+z02  class (1,0) weight 3 : -x1y0
+z10  class (0,0) weight 2 : -o0y0 +p0q0 -p0y0 +x0r0 -x0y0
+z11  class (0,0) weight 8 : +p0q0 +p0y0 -x0q0 -x0r0
+z11  class (0,2) weight 3 : -x0y2
+z11  class (1,0) weight 6 : -x1q0 +x1r0 +x1y0
+z12  class (0,1) weight 1 : +p0y1
+z12  class (0,2) weight 2 : -p0y2 +x0y2
+z12  class (1,0) weight 5 : +x1r0 -x1y0
+number of classes 12

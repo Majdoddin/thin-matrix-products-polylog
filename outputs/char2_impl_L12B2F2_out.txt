@@ -1,0 +1,10 @@
+Full product, characteristic 2: L=12 a=6 d=3 D=8 N0=C(L,a)=924 B=2 N=1848 inputs=F2 seed=2 field GF(16), t_l=l+1
+Pi_L: 132 relabelings (distinct: 132); every label pair covered; first-covering relabelings: 55 distinct, max index 54; covering table 112698432 popcounts (one-time, bit operations)
+end to end: 3415104 of 3415104 entries computed; wrong entries of the assembled product: 0; every class output of every tile-run checked: 195148800 checks, 0 wrong
+time 267.9s for 132 relabelings x 4 band pairs
+schedule all (K = 132): counted mul 8882432540, add 88378406958, inv 220, total 97260839718; formula mul 8882432540, add 88378406958, inv 220, total 97260839718; equal: True; per entry 28479.61; trivial N^2 D (mul+add) per entry 16
+   formula parts: table_mul=1092, table_add=638, det_add=660, det_mul=440, det_inv=220, read_mul=20645856, read_add=10322928, enc_add=8642752300, leaf_mul=8858370048, dec_add=79725330432, div_mul=3415104
+schedule first (K = 55): counted mul 3703097148, add 36862289074, inv 220, total 40565386442; formula mul 3703097148, add 36862289074, inv 220, total 40565386442; equal: True; per entry 11878.23; trivial N^2 D (mul+add) per entry 16
+   formula parts: table_mul=1092, table_add=638, det_add=660, det_mul=440, det_inv=220, read_mul=8692992, read_add=4346496, enc_add=3639053600, leaf_mul=3690987520, dec_add=33218887680, div_mul=3415104
+control (no division by det(Phi_S)): 1654617 of 3415104 entries wrong (expected 0 only when d = 1, where det = 1)
+total wall time 269.1s

@@ -1,0 +1,6 @@
+GF(81) = F_3[x]/(x^4 + x^3 + 2), irreducible: True
+d=2: 30 cases, identity fails in 0 so far; control (slice signs 1,-1,1) holds: False
+d=3: 50 cases, identity fails in 0 so far; control (slice signs 1,-1,1) holds: False
+d=4: 56 cases, identity fails in 0 so far; control (slice signs 1,-1,1) holds: False
+d=5: 58 cases, identity fails in 0 so far; control (slice signs 1,-1,1) holds: False
+TOTAL: 58 cases (4 with singular Phi_S), failures 0

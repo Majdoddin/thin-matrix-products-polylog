@@ -1,0 +1,35 @@
+== closed forms of M3, np, n_- against brute force (d <= 5)
+all agree: True
+== per padded entry and per form choice at B = 1 (division of 1 per entry added once), L = 8d
+L=8: per entry per z (incl. division) = 1.61741 L^4; leaf+decoding share 0.7915; setup/N0^2 = 1.469e-02; reading/N0^2 = 8.957e+00
+L=16: per entry per z (incl. division) = 1.42339 L^4; leaf+decoding share 0.8673; setup/N0^2 = 7.509e-05; reading/N0^2 = 7.546e+00
+L=24: per entry per z (incl. division) = 1.34501 L^4; leaf+decoding share 0.9047; setup/N0^2 = 2.587e-07; reading/N0^2 = 2.858e+00
+L=32: per entry per z (incl. division) = 1.30425 L^4; leaf+decoding share 0.9259; setup/N0^2 = 7.540e-10; reading/N0^2 = 7.725e-01
+L=64: per entry per z (incl. division) = 1.24185 L^4; leaf+decoding share 0.9608; setup/N0^2 = 2.795e-20; reading/N0^2 = 1.232e-03
+L=128: per entry per z (incl. division) = 1.21014 L^4; leaf+decoding share 0.9798; setup/N0^2 = 1.368e-41; reading/N0^2 = 6.566e-10
+L=256: per entry per z (incl. division) = 1.19416 L^4; leaf+decoding share 0.9897; setup/N0^2 = 1.144e-84; reading/N0^2 = 4.560e-23
+max over L = 8..256: 1.61741 L^4 at L = 8 (paper: 1.6175 at L = 8)
+L=8, B=2 (N = 140): per entry 5934.40 (char3_impl.py: 5934.4 at L = 8, schedule all)
+== L > 256: exact per-entry ratio, and the bounds of each part used in the proof
+L = 264..1024: all part bounds hold and per entry <= 2 L^4: True; max ratio 1.19368
+== set-up size: exact (table + signed table + forms + inversions) against C(L, <= 2d), and log2(setup)/L
+L=8: log2 setup = 6.17, setup / C(L,<=2d) = 1.9459e+00, log2(setup)/L = 0.7712, log2(C(L,2d))/L = 0.6009, bound of the proof log2(L 2^(1.01L))/L = 1.3850
+L=16: log2 setup = 13.60, setup / C(L,<=2d) = 4.9416e+00, log2(setup)/L = 0.8502, log2(C(L,2d))/L = 0.6769, bound of the proof log2(L 2^(1.01L))/L = 1.2600
+L=32: log2 setup = 28.02, setup / C(L,<=2d) = 1.8120e+01, log2(setup)/L = 0.8757, log2(C(L,2d))/L = 0.7289, bound of the proof log2(L 2^(1.01L))/L = 1.1663
+L=64: log2 setup = 56.38, setup / C(L,<=2d) = 1.3161e+02, log2(setup)/L = 0.8810, log2(C(L,2d))/L = 0.7624, bound of the proof log2(L 2^(1.01L))/L = 1.1038
+L=128: log2 setup = 112.60, setup / C(L,<=2d) = 3.5913e+03, log2(setup)/L = 0.8797, log2(C(L,2d))/L = 0.7830, bound of the proof log2(L 2^(1.01L))/L = 1.0647
+L=256: log2 setup = 224.50, setup / C(L,<=2d) = 1.3432e+06, log2(setup)/L = 0.8769, log2(C(L,2d))/L = 0.7952, bound of the proof log2(L 2^(1.01L))/L = 1.0413
+L=512: log2 setup = 447.78, setup / C(L,<=2d) = 9.3871e+10, log2(setup)/L = 0.8746, log2(C(L,2d))/L = 0.8023, bound of the proof log2(L 2^(1.01L))/L = 1.0276
+L=1024: log2 setup = 893.85, setup / C(L,<=2d) = 2.2921e+20, log2(setup)/L = 0.8729, log2(C(L,2d))/L = 0.8063, bound of the proof log2(L 2^(1.01L))/L = 1.0198
+L=2048: log2 setup = 1785.47, setup / C(L,<=2d) = 6.8328e+38, log2(setup)/L = 0.8718, log2(C(L,2d))/L = 0.8085, bound of the proof log2(L 2^(1.01L))/L = 1.0154
+== exhaustive candidate search (not used in the paper): (C(L,L/4) Delta_L + 1) candidates x one set-up each, against L^8 2^(1.82 L)
+L=16: log2(exact)/L = 1.8460, log2(bound product)/L = 2.0495, log2(L^8 2^(1.82L))/L = 3.8200; exact <= claim: True
+L=64: log2(exact)/L = 1.8150, log2(bound product)/L = 1.9747, log2(L^8 2^(1.82L))/L = 2.5700; exact <= claim: True
+L=256: log2(exact)/L = 1.7385, log2(bound product)/L = 1.8828, log2(L^8 2^(1.82L))/L = 2.0700; exact <= claim: True
+L=1024: log2(exact)/L = 1.7016, log2(bound product)/L = 1.8421, log2(L^8 2^(1.82L))/L = 1.8981; exact <= claim: True
+L=4096: log2(exact)/L = 1.6880, log2(bound product)/L = 1.8275, log2(L^8 2^(1.82L))/L = 1.8434; exact <= claim: True
+H(1/4) = 0.811278, beta = 0.198120, H + beta = 1.009398, 2H + beta = 1.820677
+the analytic chain ((3/8) L 2^((H+beta)L) per set-up, (L^3/128) 2^(HL) candidates) exceeds L^8 2^(1.82L) from L = 111576
+== Theorem 1.1(c): K_z bound, field sizes; Remark 5.4 (Las Vegas): E[J*] bound
+d = 1..299: log2 C(L,L/4) <= H(1/4) L, K_z <= L (d >= 2), Delta_L < L^3/128, E[J*] <= log2 C + 2, |E| < 3(2 Delta_L + 1): True
+d = 1: K_z bound floor(log2 C(8,2)) + 1 = 5 (greedy pool Z0 of 2 Delta_L = 0 elements is empty)

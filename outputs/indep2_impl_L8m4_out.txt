@@ -1,0 +1,11 @@
+
+### case N=4096 m=4 F=GF(2^4) E=GF(2^4) seed=21 relab=star schedule=all
+L=8 a=4 d=2 D=4 N0=70 B=59 N'=4130; theorem hypotheses (N>=256, 2<=m<=N^(1/4)/2): True
+set-up done 0.0s; relabelings run K=56 of 56
+entries wrong: 0 of 16777216 (padded 0 of 17056900); results in F: True; control without division: 15163871 of 16777216 wrong
+class outputs (every output at intersection d of every tile-run run): 0 wrong of 491238720
+ops counted: {'table_mul': 72, 'table_add': 28, 'det_mul': 0, 'det_add': 28, 'inv': 28, 'read_mul': 3531150, 'read_add': 941640, 'enc_add': 396665850, 'leaf_mul': 12775325696, 'dec_add': 76651954176, 'div_mul': 17056900}
+equal to Table 2 with K = runs: True 
+total ops 89845475568 = 5355.21 per entry of N^2 = 5267.40 per padded entry; 8 L^4 N^2 = 549755813888 (ratio 0.1634); 2 L^4 N'^2 ratio 0.6430
+leaf products (rank) 12775325696; 8 L^3 N^2 = 68719476736 (ratio 0.1859); inversions 28 <= N: True
+time 287.5s

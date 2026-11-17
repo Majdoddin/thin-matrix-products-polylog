@@ -1,0 +1,15 @@
+config sym_d3 (T6/T6', L=10, d=3): kinds T6-T6-T6-T6-T6-T6'-T6'-T6'-T6'-T6', L=10, d=3, D=27, field GF27, row words 200, column words 200, bands 1x1, K=40
+  properties of T6: {'P1_tight': True, 'P1_blockconst': True, 'P2': True, 'P3': True, 'nE': 30}
+  properties of T6': {'P1_tight': True, 'P1_blockconst': True, 'P2': True, 'P3': True, 'nE': 30}
+  covering: 0 of 40000 label pairs uncovered; relabelings used as first cover: 27 of 40
+  all 40000 entries computed: True; wrong entries: 0
+  other outputs at |S| = d in all runs checked: 536000, wrong: 0
+  control (no division by c(S)): wrong 30965 of 40000
+  0 set-up         counted (mul, add, inv) = (13720, 8250, 120)  formula = (13720, 8250, 120)  EQUAL
+  1 reading        counted (mul, add, inv) = (9389000, 7478400, 0)  formula = (9389000, 7478400, 0)  EQUAL
+  2 encoding       counted (mul, add, inv) = (0, 11834848768, 0)  formula = (0, 11834848768, 0)  EQUAL
+  3 leaf products  counted (mul, add, inv) = (2418647040, 0, 0)  formula = (2418647040, 0, 0)  EQUAL
+  4 decoding       counted (mul, add, inv) = (0, 80621568000, 0)  formula = (0, 80621568000, 0)  EQUAL
+  5 read-out       counted (mul, add, inv) = (40000, 0, 0)  formula = (40000, 0, 0)  EQUAL
+  total 94891993298 operations, 2372299.83 per entry, = 2.3723 L^6 per entry; counts equal formula: True; 2382.7 s
+RESULT {"name": "sym_d3 (T6/T6', L=10, d=3)", "wrong": 0, "entries": 40000, "counts_equal": true, "allrun_wrong": 0}

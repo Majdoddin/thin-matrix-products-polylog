@@ -1,0 +1,27 @@
+== degree bound: sum_{c_j > 0} c_j = floor(d^2/2), c_j = 2 ceil(j/2) - d - 1, sum c_j = 0
+d = 1..100: True
+== Lemma 5.2: on every 2d-set S of {0..L-1}: lowest exponent = predicted W_min with coefficient 1, highest = predicted W_max with coefficient 1, Delta(S) = sum c_j s_j <= Delta_L = (L-1) floor(d^2/2); DP cross-checked
+(L,d)=(8,1): sets 28, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 0 vs Delta_L 0, DP vs enumeration: 28 sets compared, 0 differ (0.0s)
+(L,d)=(6,2): sets 15, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 8 vs Delta_L 10, DP vs enumeration: 15 sets compared, 0 differ (0.0s)
+(L,d)=(10,2): sets 210, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 16 vs Delta_L 18, DP vs enumeration: 42 sets compared, 0 differ (0.0s)
+(L,d)=(12,2): sets 495, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 20 vs Delta_L 22, DP vs enumeration: 45 sets compared, 0 differ (0.0s)
+(L,d)=(16,2): sets 1820, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 28 vs Delta_L 30, DP vs enumeration: 63 sets compared, 0 differ (0.2s)
+(L,d)=(9,3): sets 84, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 28 vs Delta_L 32, DP vs enumeration: 41 sets compared, 0 differ (0.0s)
+(L,d)=(12,3): sets 924, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 40 vs Delta_L 44, DP vs enumeration: 49 sets compared, 0 differ (0.2s)
+(L,d)=(14,3): sets 3003, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 48 vs Delta_L 52, DP vs enumeration: 68 sets compared, 0 differ (0.6s)
+(L,d)=(10,4): sets 45, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 56 vs Delta_L 72, DP vs enumeration: 0 sets compared, 0 differ (0.0s)
+(L,d)=(12,4): sets 495, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 72 vs Delta_L 88, DP vs enumeration: 0 sets compared, 0 differ (0.3s)
+(L,d)=(24,3): sets 134596, sets violating Lemma 5.2 or the bound 0, c_S = 0 mod 3 on 0, max Delta(S) 88 vs Delta_L 92, DP vs enumeration: 1391 sets compared, 0 differ (31.6s)
+== Corollary 5.3 at the tile shapes L = 8d (theorem shape): root counts, greedy over Z0 (first 2 Delta_L nonzero elements, two orders), explicit list of Delta_L + 1 values
+(L,d)=(16,2) over GF(3^4) (q-1 = 80, 2 Delta_L = 60): sets 1820; max #bad z per set 20, sets with #bad z > Delta(S): 0; fraction of bad (S,z) 0.0495; z good for all sets: 0 of 80
+  greedy from Z0 (integer order 1,2,..): rounds 2 (bound floor(log2 C(L,2d)) + 1 = 11), every round at least halves: True
+  explicit list of the first Delta_L + 1 = 31 values (integer order 1,2,..) hits every set: True
+  greedy from Z0 (powers g^1,g^2,..): rounds 2 (bound floor(log2 C(L,2d)) + 1 = 11), every round at least halves: True
+  explicit list of the first Delta_L + 1 = 31 values (powers g^1,g^2,..) hits every set: True
+  adversarial explicit list (all 20 bad z of the worst set + others, 31 values) hits every set: True (0.0s)
+(L,d)=(24,3) over GF(3^5) (q-1 = 242, 2 Delta_L = 184): sets 134596; max #bad z per set 32, sets with #bad z > Delta(S): 0; fraction of bad (S,z) 0.0128; z good for all sets: 0 of 242
+  greedy from Z0 (integer order 1,2,..): rounds 2 (bound floor(log2 C(L,2d)) + 1 = 18), every round at least halves: True
+  explicit list of the first Delta_L + 1 = 93 values (integer order 1,2,..) hits every set: True
+  greedy from Z0 (powers g^1,g^2,..): rounds 2 (bound floor(log2 C(L,2d)) + 1 = 18), every round at least halves: True
+  explicit list of the first Delta_L + 1 = 93 values (powers g^1,g^2,..) hits every set: True
+  adversarial explicit list (all 32 bad z of the worst set + others, 93 values) hits every set: True (7.6s)

@@ -1,0 +1,33 @@
+
+### case N=1296 m=3 F=GF(2^1) E=GF(2^3) seed=11 relab=adjacent schedule=all
+L=8 a=4 d=2 D=4 N0=70 B=19 N'=1330; theorem hypotheses (N>=256, 2<=m<=N^(1/4)/2): True
+set-up done 0.0s; relabelings run K=56 of 56
+entries wrong: 0 of 1679616 (padded 0 of 1768900); results in F: True; control without division: 629838 of 1679616 wrong
+class outputs (every output at intersection d of every tile-run run): 0 wrong of 50944320
+ops counted: {'table_mul': 72, 'table_add': 28, 'det_mul': 0, 'det_add': 28, 'inv': 28, 'read_mul': 1137150, 'read_add': 303240, 'enc_add': 127739850, 'leaf_mul': 1324875776, 'dec_add': 7949254656, 'div_mul': 1768900}
+equal to Table 2 with K = runs: True 
+total ops 9405079728 = 5599.54 per entry of N^2 = 5316.91 per padded entry; 8 L^4 N^2 = 55037657088 (ratio 0.1709); 2 L^4 N'^2 ratio 0.6490
+leaf products (rank) 1324875776; 8 L^3 N^2 = 6879707136 (ratio 0.1926); inversions 28 <= N: True
+time 35.5s
+
+### case N=1296 m=3 F=GF(2^2) E=GF(2^6) seed=12 relab=star schedule=all
+L=8 a=4 d=2 D=4 N0=70 B=19 N'=1330; theorem hypotheses (N>=256, 2<=m<=N^(1/4)/2): True
+set-up done 0.0s; relabelings run K=56 of 56
+entries wrong: 0 of 1679616 (padded 0 of 1768900); results in F: True; control without division: 1243482 of 1679616 wrong
+class outputs (every output at intersection d of every tile-run run): 0 wrong of 50944320
+ops counted: {'table_mul': 72, 'table_add': 28, 'det_mul': 0, 'det_add': 28, 'inv': 28, 'read_mul': 1137150, 'read_add': 303240, 'enc_add': 127739850, 'leaf_mul': 1324875776, 'dec_add': 7949254656, 'div_mul': 1768900}
+equal to Table 2 with K = runs: True 
+total ops 9405079728 = 5599.54 per entry of N^2 = 5316.91 per padded entry; 8 L^4 N^2 = 55037657088 (ratio 0.1709); 2 L^4 N'^2 ratio 0.6490
+leaf products (rank) 1324875776; 8 L^3 N^2 = 6879707136 (ratio 0.1926); inversions 28 <= N: True
+time 30.2s
+
+### case N=1296 m=4 F=GF(2^4) E=GF(2^4) seed=13 relab=adjacent schedule=all
+L=8 a=4 d=2 D=4 N0=70 B=19 N'=1330; theorem hypotheses (N>=256, 2<=m<=N^(1/4)/2): False
+set-up done 0.0s; relabelings run K=56 of 56
+entries wrong: 0 of 1679616 (padded 0 of 1768900); results in F: True; control without division: 1464059 of 1679616 wrong
+class outputs (every output at intersection d of every tile-run run): 0 wrong of 50944320
+ops counted: {'table_mul': 72, 'table_add': 28, 'det_mul': 0, 'det_add': 28, 'inv': 28, 'read_mul': 1137150, 'read_add': 303240, 'enc_add': 127739850, 'leaf_mul': 1324875776, 'dec_add': 7949254656, 'div_mul': 1768900}
+equal to Table 2 with K = runs: True 
+total ops 9405079728 = 5599.54 per entry of N^2 = 5316.91 per padded entry; 8 L^4 N^2 = 55037657088 (ratio 0.1709); 2 L^4 N'^2 ratio 0.6490
+leaf products (rank) 1324875776; 8 L^3 N^2 = 6879707136 (ratio 0.1926); inversions 28 <= N: True
+time 29.9s

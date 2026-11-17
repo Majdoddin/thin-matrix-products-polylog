@@ -1,0 +1,14 @@
+Full product, characteristic 3: L=10 a=5 b=8 s=2d=4 d=2 D=3^d=9 B=2 inputs=E E=GF(3^4) (h=[2, 0, 0, 1, 1], g=X) zmode=explicit schedule=first control=none seed=1
+P3 check over Z: signed form = T4 - E3: True; plus-sign form minus (T4 + E3) = {'x0y0w0': np.int64(2), 'x0y1w0': np.int64(2), 'x1y0w0': np.int64(2)}
+N_r = 504 (N0r = C(L,a) = 252), N_c = 90 (N0c = C(L,b) = 45); direct product computed
+covering: max_S Delta(S) = 16; explicit Z = (g^0, ..., g^16), 17 values, no search; preprocessing field operations {'mul': 0, 'add': 0, 'neg': 0, 'inv': 0}
+set-up per z: z=1 (log 0): 210 of 210 sets S bad; z=3 (log 1): 0 of 210 sets S bad; z=9 (log 2): 0 of 210 sets S bad; z=27 (log 3): 0 of 210 sets S bad; z=55 (log 4): 2 of 210 sets S bad; z=32 (log 5): 2 of 210 sets S bad; z=70 (log 6): 0 of 210 sets S bad; z=77 (log 7): 0 of 210 sets S bad; z=17 (log 8): 30 of 210 sets S bad; z=51 (log 9): 0 of 210 sets S bad; z=46 (log 10): 22 of 210 sets S bad; z=31 (log 11): 4 of 210 sets S bad; z=67 (log 12): 2 of 210 sets S bad; z=68 (log 13): 4 of 210 sets S bad; z=71 (log 14): 6 of 210 sets S bad; z=80 (log 15): 2 of 210 sets S bad; z=26 (log 16): 0 of 210 sets S bad
+sets S bad for every z in Z: 0
+Pi_L: 90 relabelings; covering table over 17 x 90 (z, pi): 0 of 11340 label pairs uncovered; first-covering (z, pi) runs: 36; per z: [0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; bit-operation table 17350200 popcount/lookups
+end to end: 45360 of 45360 entries computed; wrong entries of the assembled product: 0 (of which not computed: 0); class outputs of every executed tile-run: good S 907200 checked, 0 wrong; bad S (c_z(S) = 0) 0 checked, 0 with raw value != 0
+time 44.5s for 36 (z, pi) runs x 4 band pairs
+counted (schedule first, 1 z, 36 (z, pi) runs): mul 151991596, add 1279319011, neg 260, inv 210, total 1431311077; formula mul 151991596, add 1279319011, neg 260, inv 210, total 1431311077; equal: True; per entry 31554.48; trivial 2D-1 = 17
+   formula parts: forms_mul=8, table_mul=1100, table_add=495, sign_neg=260, inv=210, readL_mul=33264, readL_add=17640, readR_mul=916920, readR_add=388800, enc_add=146449996, leaf_mul=150994944, dec_add=1132462080, div_mul=45360
+formula for schedule all (17 z x 90 relabelings): total 60726555381, per entry 1338768.86
+control (no division by c_z(S)): 44168 of 45360 computed entries wrong (0 expected only when every c_z(S) used is 1)
+total wall time 45.3s

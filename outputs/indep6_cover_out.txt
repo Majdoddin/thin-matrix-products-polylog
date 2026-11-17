@@ -1,0 +1,6 @@
+d=1 L=6 K=12: exhaustive over 9 x 9 (r,c)-pairs (9 x 9 distinct g-vectors): uncovered 0
+d=2 L=12 K=60: exhaustive over 300 x 300 (r,c)-pairs (283 x 283 distinct g-vectors): uncovered 0
+d=3 L=18 K=144: exhaustive over 10584 x 10584 (r,c)-pairs (10557 x 10557 distinct g-vectors): uncovered 0
+d=4 L=24 K=264: 200000 random quadruples, uncovered 0
+d=5 L=30 K=420: 200000 random quadruples, uncovered 0
+structural checks (one right transposition per step, |step| <= 1, diagonal average 2A/3): passed

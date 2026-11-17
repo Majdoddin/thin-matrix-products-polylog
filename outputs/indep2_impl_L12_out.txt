@@ -1,0 +1,11 @@
+
+### case N=1000 m=7 F=GF(2^1) E=GF(2^4) seed=31 relab=adjacent schedule=used
+L=12 a=6 d=3 D=8 N0=924 B=2 N'=1848; theorem hypotheses (N>=256, 2<=m<=N^(1/4)/2): False
+set-up done 1.0s; relabelings run K=55 of 132
+entries wrong: 0 of 1000000 (padded 0 of 3415104); results in F: True; control without division: 484022 of 1000000 wrong
+class outputs (every output at intersection d of every tile-run run): 0 wrong of 81312000
+ops counted: {'table_mul': 1092, 'table_add': 638, 'det_mul': 440, 'det_add': 660, 'inv': 220, 'read_mul': 8692992, 'read_add': 4346496, 'enc_add': 3639053600, 'leaf_mul': 3690987520, 'dec_add': 33218887680, 'div_mul': 3415104}
+equal to Table 2 with K = runs: True 
+total ops 40565386442 = 40565.39 per entry of N^2 = 11878.23 per padded entry; 8 L^4 N^2 = 165888000000 (ratio 0.2445); 2 L^4 N'^2 ratio 0.2864
+leaf products (rank) 3690987520; 8 L^3 N^2 = 13824000000 (ratio 0.2670); inversions 220 <= N: True
+time 134.5s

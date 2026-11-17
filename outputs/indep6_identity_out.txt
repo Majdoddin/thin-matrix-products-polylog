@@ -1,0 +1,8 @@
+p=3 q=3 d=2: identity holds as a polynomial identity: True (terms 27 / 27)
+p=3 q=3 d=3: identity holds as a polynomial identity: True (terms 567 / 567)
+p=2 q=2 d=3: identity holds as a polynomial identity: True (terms 48 / 48)
+p=2 q=4 d=2: identity holds as a polynomial identity: True (terms 64 / 64)
+p=3 q=9 d=2: identity holds as a polynomial identity: True (terms 729 / 729)
+p=5 q=5 d=2: identity holds as a polynomial identity: True (terms 125 / 125)
+p=3 q=3 d=4: identity holds as a polynomial identity: True (terms 22842 / 22842)
+control p=3 q=3 d=2 with slice coefficients (1, 2, 1): identity holds: False

@@ -1,0 +1,4 @@
+separation thm_d1 (theorem parameters, d=1): outputs of the band types 324, differing 0; outputs outside 46332, differing 12505 (control); nonzero true values in band 195; 0.1 s
+separation rect_d2 (T6 only, L=7, d=2): outputs of the band types 3675, differing 0; outputs outside 276261, differing 156626 (control); nonzero true values in band 2438; 0.8 s
+separation t4_L8 (T4, char 2, L=8, d=2): outputs of the band types 4900, differing 0; outputs outside 60636, differing 7654 (control); nonzero true values in band 2258; 0.2 s
+separation sym_d2 (T6/T6', L=8, d=2): outputs of the band types 5184, differing 0; outputs outside 1674432, differing 586065 (control); nonzero true values in band 3407; 5.1 s

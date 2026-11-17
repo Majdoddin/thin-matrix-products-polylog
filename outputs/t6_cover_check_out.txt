@@ -1,0 +1,3 @@
+d=2 L=12 K=60 exhaustive: 90000 quadruples, uncovered 0, min hitting members 6
+d=3 L=18 K=144 random 200000: 200000 quadruples, uncovered 0, min hitting members 6
+d=4 L=24 K=264 random 200000: 200000 quadruples, uncovered 0, min hitting members 8

@@ -1,0 +1,730 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{problem}[theorem]{Open problem}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\emergencystretch=2em
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\F}{\mathbb{F}}
+\newcommand{\GF}{\mathrm{GF}}
+\newcommand{\Mult}{\textnormal{\textsc{Mult}}}
+\newcommand{\Rank}{\operatorname{Rank}}
+\newcommand{\eps}{\varepsilon}
+\newcommand{\Nz}{N_0}
+\newcommand{\pairL}[2]{\langle #1,#2\rangle}
+\newcommand{\pairR}[2]{\langle #1,#2\rangle^{\vee}}
+\newcommand{\pairRt}[2]{\langle #1,#2\rangle'}
+\newcommand{\tl}[1]{\mathtt{#1}}
+\DeclareMathOperator{\polylog}{polylog}
+\DeclareMathOperator{\poly}{poly}
+\DeclareMathOperator{\perm}{perm}
+
+\title{Thicker rectangular matrix multiplication\\ with polylogarithmic overhead\\ over fields of characteristic 2 and 3}
+\author{Ruhollah Majdoddin\\ \normalsize\texttt{r.majdodin@gmail.com}}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Coppersmith showed in 1982 that the product of an $N\times N^\alpha$ and an $N^\alpha\times N$ matrix can be computed with $O(N^2\log^2N)$ essential multiplications for $\alpha\le0.17227$, and Williams showed in 2014 that the algorithm uses $N^2\polylog N$ arithmetic operations; in this form it is the rectangular product on which the polynomial method of fine-grained algorithm design relies. All later improvements, including the bound $\alpha\ge1/2$ claimed in two preprints of October 2026, cost $N^{2+o(1)}$, and as far as we know $0.17227$ has remained the largest $\alpha$ with cost $N^2\polylog N$. We reach $\alpha=1/4$ over fields of characteristic two, with $O(N^2\log^4N)$ operations and $O(N^2\log^3N)$ essential multiplications in any such field with at least $\log_2N$ elements. Over fields of characteristic three the same construction gives $\alpha=\log_23/8=0.19812$ with $O(N^2\log^5N)$ operations, and a second base tensor gives $\alpha=\ln3/(3\ln6)=0.20438$ with $O(N^2\log^6N)$ operations and $O(N^2\log^5N)$ essential multiplications in any such field with at least $\log_2N$ elements. Over $\F_2$ and $\F_3$ the operation counts are also running times on a word RAM. The algorithms are explicit, deterministic and bilinear, and have three elementary ingredients: base tensors of border rank four and six whose error terms vanish when rows and columns are grouped by weight, a reading of inner products from products of Vandermonde forms that works because $p$-th powers of linear forms vanish in characteristic $p$, and a covering of all row--column pairs by $O(L^2)$ relabelings of $L$ levels.
+\end{abstract}
+
+\begin{quote}\small\itshape
+\textbf{Use of AI.} This paper was written with Anthropic's Claude Opus~5.5 and Claude Fable~5.1 models through Claude Code, in November 2026. Under the author's direction they ran the computer searches in which the base tensors were found, developed and checked the proofs, wrote and ran the scripts of Section~\ref{sec:checks}, drafted the text and checked it against the cited sources; the research questions, the choice among the directions proposed and the decision on every statement are the author's.
+\end{quote}
+
+\section{Introduction}\label{sec:intro}
+
+The product of an $N\times m$ and an $m\times N$ matrix has $N^2$ entries, so it needs at least $N^2$ operations, and the textbook algorithm uses about $2N^2m$. How thin must the middle dimension $m=N^\alpha$ be for the product to cost $N^2$ times a small overhead? The answer depends on how small the overhead must be. Coppersmith showed in 1982 that $\alpha=0.172$ is reached with a polylogarithmic overhead~\cite{Cop82}, in essential multiplications and, as Williams showed in 2014, in all operations~\cite{Wil14b}. With an overhead of $N^{o(1)}$ the bound has grown since to $0.29462$~\cite{Cop97}, $0.30298$~\cite{LG12}, $0.31389$~\cite{LGU18} and $0.321334$~\cite{VXXZ24}, and two preprints of October 2026 claim $\alpha\ge1/2$~\cite{AvBZ26,Uzn26}, also with overhead $N^{o(1)}$; the largest $\alpha$ with overhead $N^{o(1)}$ is known as the dual exponent of matrix multiplication. With a polylogarithmic overhead, $0.172$ has remained the largest known $\alpha$ for 44 years. Williams notes that the papers that raised $0.172$ up to 2012~\cite{Cop97,HP98,KZHP08,LG12} ``only run in $N^{2+o(1)}$ time, not $N^2\poly(\log N)$ time (which we require)''~\cite[p.~18]{Wil14b}, Alman~\cite[footnote~4]{Alm21} knows of no other bound of this kind, and we have found none in the literature since.\footnote{Chen and Wang~\cite[Theorem~2.1]{CW19} state an $N^2\cdot\polylog(N)$ algorithm for the $N\times N^\alpha\times N$ product ``where $\alpha>0.172$'', citing~\cite{Cop82,LGU18}. The cited works give polylogarithmic overhead only up to $0.172$, and~\cite{LGU18} gives $N^{2+o(1)}$ up to $0.31389$; Chen and Wang apply the theorem with the exponent $0.1$.}
+
+Polylogarithmic overhead is what the polynomial method needs when its saving is subpolynomial. That method evaluates a Boolean function $f(x,y)$ on all pairs of $N$ left and $N$ right items: for shortest paths the rows of one matrix and the columns of the other, for orthogonal vectors groups of input vectors. It writes $f$ as a polynomial with at most $N^\alpha$ monomials, each a product of a part in $x$ and a part in $y$, so the values of $f$ on all pairs are the entries of one $N\times N^\alpha\times N$ product: the left matrix holds the $x$-parts evaluated on the left items, the right matrix the $y$-parts on the right items. Williams' algorithm for all-pairs shortest paths in time $n^3/2^{\Omega(\sqrt{\log n})}$~\cite{Wil14a}, Abboud, Williams and Yu's algorithm for orthogonal vectors of dimension $c\log n$ in time $n^{2-1/O(\log c)}$~\cite{AWY15}, their deterministic versions by Chan and Williams~\cite{CW16}, the threshold-circuit algorithms of~\cite{Wil14b,ACW16}, and the results built on them all use Coppersmith's bound in the form of Williams' Lemma~2.3~\cite{Wil14b}: for $\alpha\le0.172$ the product takes $N^2\poly(\log N)$ arithmetic operations over any field with $O(2^{\poly(\log N)})$ elements, with no degree of the polylogarithm proved. For shortest paths the saving over the textbook algorithm is only $2^{\Theta(\sqrt{\log n})}$, and for orthogonal vectors it is subpolynomial when $c$ grows with $n$; an overhead of $N^{o(1)}$ can exceed such savings, so there the laser-method results above do not help, however large their $\alpha$.
+
+\subsection{Results}
+
+We raise the largest $\alpha$ with polylogarithmic overhead from $0.17227$ to $1/4$ over fields of characteristic two (Theorem~\ref{thm:main}) and to $\ln3/(3\ln6)=0.20438$ over fields of characteristic three (Theorem~\ref{thm:t6}), with explicit operation counts; Theorem~\ref{thm:main} also gives $\log_23/8=0.19812$ in characteristic three, with a smaller power of the logarithm. The theorems count the arithmetic operations of the field in which the algorithm computes, and they need only that this field has enough elements: inputs over a smaller field, such as $\F_2$, are inputs over any extension, and their product lies in the smaller field. In characteristic two, and with Theorem~\ref{thm:t6} in characteristic three, the extension needed has fewer than $L^2=O(\log^2N)$ elements, so on a word RAM its operations still take $O(1)$ time, and the rank over the smaller field grows only by the square of the extension degree, $O((\log\log N)^2)$; the running times on a word RAM are in Corollary~\ref{cor:williams}.
+
+\begin{theorem}\label{thm:main}
+Let $p\in\{2,3\}$ and $\alpha_p:=\log_2p/(4(p-1))$, so that $\alpha_3=\log_23/8=0.19812\ldots$ and $\alpha_2=1/4$.\\
+Let $2\le m\le N^{\alpha_p}/p$, put $d:=\lceil\log_pm\rceil$ and $L:=4(p-1)d$, so that $L<\log_2N$, and for $p=3$ put $\Delta:=(L-1)\lfloor d^2/2\rfloor<L^3/128$.\\
+Let $E$ be a field of characteristic $p$ that contains the elements the table below requires.\\
+There is an explicit deterministic algorithm that, given $X\in E^{N\times m}$ and $Y\in E^{m\times N}$, computes $XY$, after the preprocessing of case~(c), by a bilinear straight-line program with at most the following numbers of arithmetic operations of $E$ and of essential multiplications:
+\begin{center}\small
+\begin{tabular}{@{}cc>{\raggedright\arraybackslash}p{3.6cm}>{\raggedright\arraybackslash}p{3.6cm}ll@{}}
+\toprule
+case & $p$ & $E$ must contain & elements used & operations & ess.\ mult.\\
+\midrule
+(a) & $2$ & $L$ distinct elements & any $L$ distinct elements & $8L^4N^2$ & $8L^3N^2$\\
+(b) & $3$ & $z$ of degree $>\Delta$ over $\F_3$, or transcendental & $z$ & $8L^4N^2$ & $8L^3N^2$\\
+(c) & $3$ & more than $2\Delta$ elements & $\le L$ elements chosen in a preprocessing & $8L^5N^2$ & $8L^4N^2$\\
+\bottomrule
+\end{tabular}
+\end{center}
+The program is determined by $N$, $m$ and the elements used; in case~(b), for $E=\GF(3^n)$ with $n>\Delta$, any element of degree $n$ serves as $z$. The preprocessing of case~(c) takes $O(N^{1.01}\log^4N)$ operations on constants of $E$ alone and depends on $N$, $m$ and $E$ only. Hence, since $L<\log_2N$, the product takes fewer than $8N^2\log_2^4N$ operations in cases (a) and~(b) and $8N^2\log_2^5N$ in case~(c), and $\Rank_E(\langle N,m,N\rangle)<8N^2\log_2^3N$ in cases (a) and~(b) and $<8N^2\log_2^4N$ in case~(c).
+\end{theorem}
+
+So the $N\times N^{\alpha_p}\times N$ product costs $O(N^2\log^4N)$ operations in characteristic two and over every field of characteristic three that contains an element $z$ as in case~(b), and $O(N^2\log^5N)$ over every field of characteristic three with more than $2\Delta$ elements. The theorem reaches $m=N^{\alpha_p}$ itself, not only $N^{\alpha_p-\eps}$: the bound $m\le N^{\alpha_p}/p$ serves only the constant, and for $N^{\alpha_p}/p<m\le N^{\alpha_p}$ the same algorithm keeps these bounds with a larger constant (Remark~\ref{rem:constants} and Section~\ref{sec:char3}). The algorithm has the same structure in both characteristics, the tensor $T_4$, the bands, the covering and the reading; it reads $p$ from the field, which fixes the parameters and the truncated algebra of the reading, and chooses the elements of the table before it touches $X$ and $Y$. These elements are the parameters of the linear forms of the reading step (Section~\ref{sec:lemmas}), and they determine the constant by which the reading divides. In characteristic two, $L$ distinct elements give Vandermonde forms, and the constant is a Vandermonde determinant, never zero. In characteristic three the forms are built from the powers of one element $z$, and the constant can vanish; one $z$ of large degree avoids this in a single execution of the algorithm. Otherwise the preprocessing chooses up to $L$ elements, testing constants for zero, never entries of $X$ and $Y$, and the algorithm is executed once for each of them; this repetition is the extra factor $L$ of case~(c).
+
+In characteristic three a second base tensor does better. The tensor $T_6$ of Section~\ref{sec:t6} has border rank six, with a decomposition into six rank-one terms up to error terms, and a cell whose slice has rank three, which fits the algebra of the reading in characteristic three. Its reading divides by the square of a Vandermonde determinant, which never vanishes, so, as in characteristic two, $L$ distinct elements suffice and nothing is chosen in a preprocessing.
+
+\begin{theorem}\label{thm:t6}
+Let $\alpha_6:=\ln3/(3\ln6)=0.20438\ldots$, the exponent of the tensor $T_6$.\\
+Let $2\le m\le N^{\alpha_6}/3$, put $d:=\lceil\log_3m\rceil$ and $L:=6d$, so that $L<2\log_6N<0.78\log_2N$.\\
+Let $E$ be a field of characteristic three with distinct elements $t_1,\dots,t_L$.\\
+There is an explicit deterministic algorithm that, given $X\in E^{N\times m}$ and $Y\in E^{m\times N}$, computes $XY$ by a bilinear straight-line program with at most $4L^6N^2<0.86N^2\log_2^6N$ arithmetic operations of $E$, of which at most $L^5N^2<0.28N^2\log_2^5N$ are essential multiplications. The program is determined by $N$, $m$ and $t_1,\dots,t_L$. Hence $\Rank_E(\langle N,m,N\rangle)<0.28N^2\log_2^5N$.
+\end{theorem}
+
+Like Theorem~\ref{thm:main}, Theorem~\ref{thm:t6} reaches $m=N^{\alpha_6}$ itself, with a larger constant (Remark~\ref{rem:constants6}). Compared with cases (b) and~(c) of Theorem~\ref{thm:main}, it has the larger exponent and the weaker condition on the field, $L$ distinct elements, with neither an element of large degree nor a preprocessing; Theorem~\ref{thm:main} has the smaller power of the logarithm, four or five against six, for $m\le N^{\alpha_3}$.
+
+The rank bounds of the theorems come from bilinearity: the rank is the least number of essential multiplications of a bilinear program, one whose only products of input-dependent quantities multiply a linear form in $X$ by a linear form in $Y$ (Section~\ref{sec:prelim}), and our programs are bilinear. Like every bilinear algorithm, they also apply to matrices whose entries are blocks.
+
+The operation counts hold over every field that meets the conditions, finite or not. Over small finite fields they become running times, since an operation of such a field takes $O(1)$ time on a word RAM; over other fields the time depends on the cost of the field's operations. Theorem~\ref{thm:main}(a) is the analogue of Williams' lemma in characteristic two, and the following corollary adds the running times: part~(i) gives the time over small fields, part~(ii) the time of case~(b) of Theorem~\ref{thm:main}, which computes in a large field of characteristic three, part~(iii) the rank over the field of the inputs, and part~(iv) the time and the rank of Theorem~\ref{thm:t6}.
+
+\begin{corollary}\label{cor:williams}
+Let $p\in\{2,3\}$, let $\alpha_p$ be as in Theorem~\ref{thm:main}, and let $m\le N^{\alpha_p}$.
+\begin{enumerate}[label=(\roman*),nosep]
+\item Let $F$ be a finite field of characteristic $2$ with at most $\log_2^2N$ elements, or of characteristic $3$ with at most $\log_2^3N$ elements, given by an irreducible polynomial over its prime field; for example $F=\F_2$ or $F=\F_3$. On a word RAM with words of $\Theta(\log N)$ bits, the product of an $N\times m$ and an $m\times N$ matrix over $F$ takes $O(N^2\log^4N)$ time in characteristic $2$ and $O(N^2\log^5N)$ time in characteristic $3$, deterministically and including the construction of the field in which the algorithm computes.
+\item Let $F$ be a finite field of characteristic $3$ given by an irreducible polynomial of degree $k>\Delta$ over $\F_3$, with $\Delta$ as in Theorem~\ref{thm:main}; for example $F=\F_3[x]/(x^n+x^{n/2}+2)$, where $n$ is the least power of two greater than $\max(\Delta,1)$~\cite[Theorem~3.35]{LN97}. On a word RAM with words of $\Theta(\log N)$ bits, the product of an $N\times m$ and an $m\times N$ matrix over $F$, or over a subfield of $F$ such as $\F_3$, takes $O(k^2N^2\log^4N)$ time, deterministically and without preprocessing; with the example field, inputs over $\F_3$ take $O(N^2\log^{10}N)$ time.
+\item For every field $F$ of characteristic $2$ and $m\le N^{1/4}/2$, $\Rank_F(\langle N,m,N\rangle)<8k^2N^2\log_2^3N$, where $k<\log_2\log_2N+1$ is the degree of the smallest extension of $F$ with at least $L$ elements, $L$ as in Theorem~\ref{thm:main} for $p=2$; over $\F_2$ this is $O(N^2\log^3N\,(\log\log N)^2)$.
+\item For every field $F$ of characteristic $3$ and $m\le N^{\alpha_6}/3$, $\Rank_F(\langle N,m,N\rangle)<0.28k^2N^2\log_2^5N$, where $k<\log_3\log_2N+1$ is the degree of the smallest extension of $F$ with at least $L$ elements, $L$ as in Theorem~\ref{thm:t6}. If $F$ is finite with at most $\log_2^2N$ elements, given by an irreducible polynomial over $\F_3$, for example $F=\F_3$, then for $m\le N^{\alpha_6}$ the product of an $N\times m$ and an $m\times N$ matrix over $F$ takes $O(N^2\log^6N)$ time on a word RAM with words of $\Theta(\log N)$ bits, deterministically and without preprocessing beyond building the field.
+\end{enumerate}
+\end{corollary}
+
+Table~\ref{tab:compare} compares the bounds. Coppersmith's 1982 theorem~\cite[p.~467]{Cop82} is the rank bound $\Rank(\langle N,N^{0.17227},N\rangle)=O(N^2\log^2N)$. Additions and multiplications by constants are not counted, and his construction performs them with matrices of scalars and inverses of their minors~\cite[p.~468]{Cop82}. Williams~\cite[Lemma~2.3 and Appendix~A]{Wil14b} chose these matrices to be Vandermonde matrices and showed that the algorithm then uses few operations in total:
+\begin{quote}
+``For all sufficiently large $N$, and $\alpha\le.172$, multiplication of an $N\times N^\alpha$ matrix with an $N^\alpha\times N$ matrix can be done in $N^2\poly(\log N)$ arithmetic operations, over any field with $O(2^{\poly(\log N)})$ elements.''
+\end{quote}
+Neither the lemma nor its proof states the degree of the polylogarithm: the exposition bounds each step by $5^M\poly(M)$ operations with $M\approx\log_5N$, and its Vandermonde matrices need about $2^M=N^{0.43}$ distinct field elements, so over $\F_2$ it works in an extension of degree at least $0.43\log_2N$~\cite[Appendix~A]{Wil14b}. Williams' paper on shortest paths states the lemma as $O(N^2\log^2N)$ arithmetic operations~\cite[Lemma~2.3]{Wil14a}, but notes that Coppersmith only proves a bound on the rank~\cite[footnote~5]{Wil14a}, and its exposition proves $N^2\poly(\log N)$ operations~\cite[Lemma~C.1]{Wil14a}: the exponent $2$ there is that of the rank. The only explicit bound is thus Coppersmith's rank $O(N^2\log^2N)$.
+
+The operation counts in the table are taken in fields of different sizes and are not comparable across rows: our algorithm needs only $L<\log_2N$ distinct field elements, Coppersmith's about $N^{0.43}$ in Williams' exposition. On a word RAM the elements of both fields fit in one word, and tables make their operations take $O(1)$ time, so the comparable column is the time: over $\F_2$ ours is $O(N^2\log^4N)$, from the explicit count $8N^2\log_2^4N$, and Williams' is $N^2\poly(\log N)$ of unstated degree. Counted in bit operations, an operation of our field costs $O((\log\log N)^2)$, against $\Omega(\log N)$ for a field with $N^{0.43}$ or more elements. Our rank bound, on the other hand, has one logarithm more than Coppersmith's: the gain is in $\alpha$, not in the power of the logarithm. Like Coppersmith's construction and Williams' lemma, our algorithms are deterministic, explicit programs with worst-case bounds, so the comparison is like for like; determinism would matter most to the deterministic polynomial-method algorithms of Chan and Williams~\cite{CW16}, which however compute over $\Z/2^l\Z$ (Section~\ref{sec:polymethod}).
+
+Of the applications of Williams' lemma listed above, two evaluate their polynomials over $\F_2$ and can use Corollary~\ref{cor:williams}: Williams' shortest-path algorithm~\cite{Wil14a} and Abboud, Williams and Yu's algorithm for orthogonal vectors~\cite{AWY15}. Their published versions use polynomials with at most $n^{0.1}$ monomials and state their savings with an unspecified constant. Run with $n^{1/4}$ monomials in place of Coppersmith's $n^{0.172}$, their proofs give savings larger by a factor $2^{(0.042-o(1))\sqrt{\log_2n}}$ for Williams' shortest-path algorithm, which recent preprints have overtaken, and by a factor $n^{0.45\eps}$ for orthogonal vectors whose saving $n^\eps$, with $\eps=\eps(n)\to0$, is subpolynomial (Section~\ref{sec:polymethod}). No published theorem changes.
+
+\begin{table}[t]
+\centering\footnotesize
+\renewcommand{\arraystretch}{1.2}\setlength{\tabcolsep}{2.8pt}
+\begin{tabular}{@{}lllllll@{}}
+\toprule
+ & $p$ & $\alpha$ & operations & field & rank & time$^\dagger$\\
+\midrule
+Coppersmith~\cite{Cop82} & any & $0.17227$ & --- & large enough & $O(N^2\log^2N)$ & ---\\
+Williams~\cite[L.~2.3]{Wil14b} & any & $0.172$ & $N^2\poly(\log N)^*$ & $\gtrsim N^{0.43}$ & as~\cite{Cop82} & $N^2\poly(\log N)^*$\\
+Theorem~\ref{thm:main}(a) & $2$ & $1/4$ & $<8N^2\log_2^4N$ & $\ge L$ & $<8N^2\log_2^3N$ & $O(N^2\log^4N)$\\
+Theorem~\ref{thm:main}(b) & $3$ & $0.19812$ & $<8N^2\log_2^4N$ & $z$ of degree $>\Delta$ & $<8N^2\log_2^3N$ & $O(N^2\log^{10}N)$\\
+Theorem~\ref{thm:main}(c) & $3$ & $0.19812$ & $<8N^2\log_2^5N$ & $>2\Delta$ & $<8N^2\log_2^4N$ & $O(N^2\log^5N)$\\
+Theorem~\ref{thm:t6} & $3$ & $0.20438$ & $<0.86N^2\log_2^6N$ & $\ge L$ & $<0.28N^2\log_2^5N$ & $O(N^2\log^6N)$\\
+\midrule
+laser method~\cite{VXXZ24} & any & $0.321334$ & $N^{2+o(1)}$ & any & $N^{2+o(1)}$ & $N^{2+o(1)}$\\
+preprints~\cite{AvBZ26,Uzn26} & any / $0$ & $\ge1/2$ & $N^{2+o(1)}$ & any & $N^{2+o(1)}$ & $N^{2+o(1)}$\\
+\bottomrule
+\end{tabular}
+\caption{Bounds for the product of an $N\times m$ and an $m\times N$ matrix, $m=N^\alpha$, over fields of characteristic $p$. The upper part has polylogarithmic overhead, the lower part an overhead of $N^{o(1)}$. Operations and rank are counted in a field with the number of elements given, where $L$ and $\Delta$ are the parameters of the theorem in the row ($L<\log_2N$, $2\Delta<L^3/64$); the explicit counts hold for $m\le N^\alpha/p$, and up to $m=N^\alpha$ with a larger constant (Remarks~\ref{rem:constants} and~\ref{rem:constants6}); counts in fields of different sizes are not comparable. The field column is the field the algorithm computes in, an extension of the input field if that is too small. ${}^\dagger$Running time on a word RAM with words of $\Theta(\log N)$ bits for input matrices over $\F_p$: the operations times $O(1)$, and in case~(b) times $O(k^2)$ for the degree $k=O(\log^3N)$ of~$z$ (Corollary~\ref{cor:williams}). ${}^*$No degree of the polylogarithm is proved~\cite[Appendix~A]{Wil14b}; \cite[Lemma~2.3]{Wil14a} states $O(N^2\log^2N)$, the degree of Coppersmith's rank bound.}\label{tab:compare}
+\end{table}
+
+\subsection{The idea}\label{sec:idea}
+
+The base tensor is the five-term tensor
+\[
+T_4=\tl{x_0}\tl{y_0}\tl{z_0}+\tl{x_0}\tl{y_1}\tl{z_1}+\tl{x_1}\tl{y_0}\tl{z_2}+\tl{x_1}\tl{q_0}\tl{w_0}+\tl{p_0}\tl{y_1}\tl{w_0}
+\]
+with left letters $\tl{x_0},\tl{x_1},\tl{p_0}$, right letters $\tl{y_0},\tl{y_1},\tl{q_0}$ and output letters $\tl{z_0},\tl{z_1},\tl{z_2},\tl{w_0}$. Four rank-one terms compute $T_4$ up to three error terms (Lemma~\ref{lem:P3} and Remark~\ref{rem:border}), so its border rank is $4$. We use it on $L$ levels. A left string in $\{\tl{x_0},\tl{x_1},\tl{p_0}\}^L$ is a pair $(r,P)$ of sets of levels, $r$ where the letter is $\tl{x_1}$ or $\tl{p_0}$ and $P\subseteq r$ where it is $\tl{p_0}$; a right string is a pair $(c,Q)$ in the same way, and an output string is a pair $(r,c)$. One run of the recursion over $L$ copies of the decomposition uses $4^L$ multiplications. If the left inputs are supported on strings with $|r|=a$ and the right ones on strings with $|c|=a$, then the three error terms never occur (Lemma~\ref{lem:D}), and the output at $(r,c)$ for a left array $A$ and a right array $B$ is the \emph{subset convolution}~\cite{BHKK07} over $S=r\cap c$,
+\[
+\Mult[(r,c)]=\sum_{P\subseteq S}A[(r,P)]\,B[(c,S\setminus P)].
+\]
+We label each row of $X$ by an $L/2$-subset $r$ of the levels and each column of $Y$ by an $L/2$-subset $c$, so one band, a block of rows of $X$ (or columns of $Y$) with distinct labels, has $\binom L{L/2}\approx2^L/\sqrt L$ rows. Index the inner dimension by the subsets of $[d]$, $d=L/4$, and put $A[(r,P)]:=\langle X_r,a(P)\rangle$ and $B[(c,Q)]:=\langle Y_c,a(Q)\rangle^\vee$, where $\langle x,v\rangle$ pairs the coordinate $x_T$ with the coefficient of $\xi^T$ in $v$, $\langle x,v\rangle^\vee$ pairs it with the coefficient of the complementary monomial $\xi^{[d]\setminus T}$, and $a(P)$ is the product of the Vandermonde forms $\varphi_l=\sum_it_l^{i-1}\xi_i$, $l\in P$, in the algebra $E[\xi_1,\dots,\xi_d]/(\xi_1^2,\dots,\xi_d^2)$. In characteristic two the subset convolution then collapses (Proposition~\ref{prop:B}): for every $d$-set $S$, with $\Phi_S=(t_l^{i-1})_{l\in S,i\in[d]}$ the Vandermonde matrix of the nodes in $S$,
+\[
+\sum_{P\subseteq S}\langle X_r,a(P)\rangle\langle Y_c,a(S\setminus P)\rangle^\vee=\det(\Phi_S)\sum_{T\subseteq[d]}X_r[T]\,Y_c[T],
+\]
+because $\xi_i+\eta_i$ squares to zero and permanents are determinants. So one run computes, for every pair with $|r\cap c|=L/4$, the entry of the product of a $\binom L{L/2}\times2^{L/4}$ and a $2^{L/4}\times\binom L{L/2}$ matrix, up to a known nonzero scalar. These pairs are a fraction $\Theta(1/\sqrt L)$ of all pairs, and $L(L-1)$ relabelings of the levels bring every pair to intersection $L/4$ in some run (Lemma~\ref{lem:C}). Each run costs $4^L=\Theta(L)\cdot\binom L{L/2}^2$ multiplications; with the $L(L-1)$ relabelings and the $L$ axes of the decoding the cost per entry is $O(L^4)=O(\log^4N)$, and the inner dimension is $2^{L/4}\approx N^{1/4}$.
+
+Coppersmith's algorithm has the same shape, with Schönhage's five-term partial product~\cite{Sch81} in place of $T_4$: a block of $\approx5^L$ rows with inner dimension $2^{2L/5}$, and the exponent $2\log2/(5\log5)$~\cite{Cop82}, \cite[Section~8]{Maj26}. Both exponents are $2\ln2/(R\ln R)$, where $R$ is the number of rank-one terms of the base decomposition, $R=5$ there and $R=4$ here; the price of the smaller $R$ is the reading, which needs a characteristic where squares of linear forms vanish.
+
+In characteristic three the reading works in $E[\xi_1,\dots,\xi_d]/(\xi_i^3)$, and the high cell of $T_4$, the output letter $\tl{w_0}$ with the slice $\tl{x_1q_0}+\tl{p_0y_1}$ of rank two, contributes at most the exponent one per level; so Theorem~\ref{thm:main} uses two high levels per inner variable. The tensor $T_6$ of Section~\ref{sec:t6} has border rank six and a high cell with the slice $\tl{x_0r_0}+\tl{p_0q_0}+\tl{o_0y_0}$ of rank three, whose letters carry the exponents $0,1,2$. Per level the reading then produces $\varphi(\xi)^2+\varphi(\xi)\varphi(\eta)+\varphi(\eta)^2=(\varphi(\xi)-\varphi(\eta))^2$ in place of $\varphi(\xi)+\varphi(\eta)$, one high level per inner variable suffices, and the divisor is $\det(\Phi_S)^2$. The exponent $2\ln3/(6\ln6)$ of $T_6$ has the same form as those above, with $\ln2$ replaced by $\ln3$, the logarithm of the rank of the high slice.
+
+\subsection{Related work and origin}
+
+Every ingredient was available in the early 1980s: border rank and approximate algorithms~\cite{BCLR79,Bin80,Sch81}, the Frobenius identity $(a+b)^2=a^2+b^2$, and elementary combinatorics. The vanishing of squares and the equality of permanent and determinant in characteristic two also drive the algebraic algorithms for $k$-path and packing~\cite{Kou08,Wil09} and for Hamiltonicity~\cite{Bjo10}, and the product in $E[\xi]/(\xi_i^2)$ is the subset convolution of~\cite{BHKK07}. In characteristic two the exterior algebra of Brand, Dell and Husfeldt is this algebra~\cite[Proposition~13]{BDH18}, and our product $\det(\Phi_S)\,\xi_1\cdots\xi_d$ of Vandermonde forms is their walk extensor of Vandermonde vectors~\cite[Lemma~5]{BDH18}. There these facts detect a multilinear monomial, here they read an inner product exactly, which the exactness of $T_4$ on inputs of fixed weight makes possible. The tensor $T_4$, however, is not one met naturally. It was found in October 2026 by a computer search over small tensors, filtered by the model of~\cite{Maj26}, which asks what a base tensor must satisfy for a thin product with polylogarithmic cost per entry; $T_6$ comes from the same search, and its decomposition with a grading from a later search for decompositions whose error terms have positive weight. In~\cite{Maj26} the thin-product data structure of Alman and Vassilevska Williams~\cite{AV26} was extended to the range $0.17227$ with Schönhage's tensor, and at the limit of that range one block of the construction is Coppersmith's product~\cite[Section~8]{Maj26}. The construction here stands to $T_4$ as Coppersmith's stands to Schönhage's tensor; a data-structure form of the construction in characteristic two, for every exponent below $1/4$, will be treated separately. Coppersmith's paper also contains the exponents $0.1402$ and $0.197$, with overhead $N^\eps$, not polylogarithmic; Nissim and Schwartz~\cite{NS24} found the proof on which both rest, Coppersmith's second proof, incorrect and gave another for the same bound. The bound $\alpha\ge1/2$ of~\cite{AvBZ26} is proved through Strassen's duality theorem, which yields asymptotic restrictions, that is, restrictions up to factors $2^{o(n)}$ in the tensor power $n$~\cite{AvBZ26}; its overhead $N^{o(1)}$ thus comes with the method.
+
+\paragraph{Organization.} Section~\ref{sec:prelim} fixes the model and the tensor. Section~\ref{sec:lemmas} proves the three lemmas: the error terms vanish on equal-size bands, the reading, and the covering. Section~\ref{sec:char2} gives the algorithm and its exact operation count and proves Theorem~\ref{thm:main} and Corollary~\ref{cor:williams} in characteristic two. Section~\ref{sec:char3} proves them in characteristic three, and Section~\ref{sec:t6} proves Theorem~\ref{thm:t6} and part~(iv) of the corollary with the tensor $T_6$ of border rank six. Section~\ref{sec:limits} discusses why the method stops at $1/4$, why it needs a small characteristic and what a better base tensor needs, Section~\ref{sec:conv} reads the reading as a convolution, Section~\ref{sec:polymethod} discusses the polynomial method, and Section~\ref{sec:checks} reports an implementation and the crossover. The appendix proves that a base tensor with one high cell cannot go beyond $1/4$.
+
+\section{Preliminaries}\label{sec:prelim}
+
+\paragraph{Model.} Operations are those of straight-line programs over a field $E$: additions, subtractions, multiplications and divisions, each counted as one operation; constants of $E$ are free to use. A straight-line program for the product $XY$ is \emph{bilinear} if every multiplication of two quantities that both depend on the input is a product of an $E$-linear form in the entries of $X$ and an $E$-linear form in the entries of $Y$, and the outputs are $E$-linear combinations of these products; the number of such products is the number of \emph{essential multiplications}, and the least number over all bilinear programs is the rank $\Rank_E(\langle N,m,N\rangle)$. If $E\supseteq F$ is an extension of degree $k$, a bilinear program over $E$ for an $F$-valued product gives one over $F$ with $k^2$ times as many essential multiplications: write each element of $E$ in an $F$-basis; an $E$-linear form in $F$-valued inputs has $F$-linear coordinates, and a product of two elements of $E$ is an $F$-linear combination of the $k^2$ products of their coordinates.
+
+\paragraph{Notation.} $[L]=\{1,\dots,L\}$ is the set of levels. For even $L$, $\binom L{L/2}\ge2^L/\sqrt{2L}$, so
+\begin{equation}\label{eq:binom}
+4^L\le2L\binom L{L/2}^2.
+\end{equation}
+
+\paragraph{The tensor and its decomposition.} We write tensors as trilinear forms. Let
+\[
+T_4:=\tl{x_0y_0z_0}+\tl{x_0y_1z_1}+\tl{x_1y_0z_2}+\tl{x_1q_0w_0}+\tl{p_0y_1w_0},\qquad E_3:=\tl{x_1y_0z_0}+\tl{p_0y_1z_1}+\tl{x_1q_0z_2}.
+\]
+
+\begin{lemma}\label{lem:P3}
+With the left forms $(U_1)_1=\tl{x_0}-\tl{x_1}$, $(U_1)_2=\tl{x_0}-\tl{p_0}$, $(U_1)_3=\tl{x_1}$, $(U_1)_4=\tl{x_0}$, the right forms $(U_2)_1=\tl{y_0}$, $(U_2)_2=\tl{y_1}$, $(U_2)_3=\tl{y_0}-\tl{q_0}$, $(U_2)_4=\tl{y_0}+\tl{y_1}$ and the output forms $(U_3)_1=\tl{z_0}-\tl{w_0}$, $(U_3)_2=\tl{z_1}-\tl{w_0}$, $(U_3)_3=\tl{z_2}-\tl{w_0}$, $(U_3)_4=\tl{w_0}$, the rows of matrices $U_1$, $U_2$ and $U_3$ in the letter bases,
+\[
+\sum_{\lambda=1}^4(U_1)_\lambda(U_2)_\lambda(U_3)_\lambda=T_4-E_3\qquad\text{over }\Z,\text{ hence over every commutative ring.}
+\]
+\end{lemma}
+
+\begin{proof}
+The four terms expand to $\tl{x_0y_0z_0}-\tl{x_0y_0w_0}-\tl{x_1y_0z_0}+\tl{x_1y_0w_0}$, $\tl{x_0y_1z_1}-\tl{x_0y_1w_0}-\tl{p_0y_1z_1}+\tl{p_0y_1w_0}$, $\tl{x_1y_0z_2}-\tl{x_1y_0w_0}-\tl{x_1q_0z_2}+\tl{x_1q_0w_0}$ and $\tl{x_0y_0w_0}+\tl{x_0y_1w_0}$. The monomials $\tl{x_0y_0w_0}$, $\tl{x_0y_1w_0}$, $\tl{x_1y_0w_0}$ occur once with each sign; the remaining eight are the five of $T_4$ with sign $+$ and the three of $E_3$ with sign $-$.
+\end{proof}
+
+\begin{remark}\label{rem:border}
+Scaling $\tl{x_1},\tl{p_0},\tl{y_1},\tl{q_0}$ by $\eps$, $\tl{z_1},\tl{z_2}$ by $\eps^{-1}$ and $\tl{w_0}$ by $\eps^{-2}$ fixes every monomial of $T_4$ and multiplies every monomial of $E_3$ by $\eps$, so Lemma~\ref{lem:P3} gives $T_4-\eps E_3$ as a sum of four rank-one tensors and the border rank of $T_4$ is at most $4$; it is exactly $4$, since the four output slices of $T_4$ are linearly independent. Lemma~\ref{lem:D} below is the combinatorial form of this grading: on equal-size bands the error terms do not occur at all, so no limit is needed and the algorithm is exact.
+\end{remark}
+
+\paragraph{Strings.} A \emph{left string} is a word $u\in\{\tl{x_0},\tl{x_1},\tl{p_0}\}^L$; it is determined by $r(u):=\{l:u_l\in\{\tl{x_1},\tl{p_0}\}\}$ and $P(u):=\{l:u_l=\tl{p_0}\}\subseteq r(u)$, and we write $u=(r,P)$. A \emph{right string} $v\in\{\tl{y_0},\tl{y_1},\tl{q_0}\}^L$ is $v=(c,Q)$ with $c=\{l:v_l\in\{\tl{y_1},\tl{q_0}\}\}$ and $Q=\{l:v_l=\tl{q_0}\}\subseteq c$. An \emph{output string} $w\in\{\tl{z_0},\tl{z_1},\tl{z_2},\tl{w_0}\}^L$ is $w=(r,c)$ for the pair of sets of levels with $\tl{z_2}$ on $r\setminus c$, $\tl{z_1}$ on $c\setminus r$, $\tl{w_0}$ on $r\cap c$ and $\tl{z_0}$ elsewhere. For a commutative ring $E$ and arrays $A\in E^{\{\tl{x_0},\tl{x_1},\tl{p_0}\}^L}$, $B\in E^{\{\tl{y_0},\tl{y_1},\tl{q_0}\}^L}$ put
+\[
+\Mult(A,B)[w]:=\sum_{u,v}\ \prod_{l=1}^L\gamma(u_l,v_l,w_l)\,A[u]\,B[v],
+\]
+where $\gamma(s,t,z)$ is the coefficient of the monomial $stz$ in $T_4-E_3$.
+
+\begin{lemma}[the recursion computes $\Mult$]\label{lem:rec}
+Let $U_1,U_2\in\Z^{4\times3}$ and $U_3\in\Z^{4\times4}$ be the coefficient matrices of the forms of Lemma~\ref{lem:P3}: $U_k[\lambda,s]$ is the coefficient of the letter $s$ in $(U_k)_\lambda$. For $\tau\in[4]^L$ put $(U_1^{\otimes L}A)_\tau:=\sum_u\prod_lU_1[\tau_l,u_l]A[u]$ and $(U_2^{\otimes L}B)_\tau:=\sum_v\prod_lU_2[\tau_l,v_l]B[v]$. Then for every output string $w$,
+\[
+\sum_{\tau\in[4]^L}\prod_lU_3[\tau_l,w_l]\;(U_1^{\otimes L}A)_\tau\,(U_2^{\otimes L}B)_\tau=\Mult(A,B)[w].
+\]
+The vectors $U_1^{\otimes L}A$ and $U_2^{\otimes L}B$ cost $2(4^L-3^L)$ additions each, the $4^L$ products $(U_1^{\otimes L}A)_\tau(U_2^{\otimes L}B)_\tau$ are the only multiplications, and applying $(U_3^{\top})^{\otimes L}$ to them gives all $4^L$ outputs with $3L4^{L-1}$ additions.
+\end{lemma}
+
+\begin{proof}
+The left side is
+\[
+\sum_{u,v}A[u]B[v]\sum_\tau\prod_lU_3[\tau_l,w_l]U_1[\tau_l,u_l]U_2[\tau_l,v_l]=\sum_{u,v}A[u]B[v]\prod_l\sum_{\lambda=1}^4U_3[\lambda,w_l]U_1[\lambda,u_l]U_2[\lambda,v_l],
+\]
+and the inner sum is $\gamma(u_l,v_l,w_l)$ by Lemma~\ref{lem:P3}. For the cost, apply the matrices axis by axis: the $l$-th axis of $U_1^{\otimes L}$ acts on $4^{l-1}3^{L-l}$ fibres, with $2$ additions each since every row of $U_1$ has at most two nonzero entries, and $\sum_{l=1}^L2\cdot4^{l-1}3^{L-l}=2(4^L-3^L)$; likewise for $U_2$. Each axis of $(U_3^\top)^{\otimes L}$ acts on $4^{L-1}$ fibres with $3$ additions ($\tl{w_0}\leftarrow$ term $4$ minus terms $1,2,3$).
+\end{proof}
+
+\section{Three lemmas}\label{sec:lemmas}
+
+The first and the third lemma hold over every commutative ring; the reading uses characteristic two.
+
+\begin{lemma}[equal-size bands]\label{lem:D}
+Let $A$ be supported on left strings with $|r(u)|=a_0$ and $B$ on right strings with $|c(v)|=b_0$. Then for every output string $w=(r,c)$ with $|r|=a_0$ and $|c|=b_0$, and $S:=r\cap c$,
+\[
+\Mult(A,B)[w]=\sum_{P\subseteq S}A[(r,P)]\,B[(c,S\setminus P)].
+\]
+\end{lemma}
+
+\begin{proof}
+A summand $(u,v)$ is nonzero only if at every level $l$ the triple $(u_l,v_l,w_l)$ is one of the eight monomials of $T_4-E_3$. In every monomial with output letter $\tl{z_2}$ or $\tl{w_0}$ the left letter is $\tl{x_1}$ or $\tl{p_0}$ ($\tl{x_1y_0z_2}$, $\tl{x_1q_0w_0}$, $\tl{p_0y_1w_0}$, $\tl{x_1q_0z_2}$), so $r\subseteq r(u)$; in every monomial with output letter $\tl{z_1}$ or $\tl{w_0}$ the right letter is $\tl{y_1}$ or $\tl{q_0}$ ($\tl{x_0y_1z_1}$, $\tl{x_1q_0w_0}$, $\tl{p_0y_1w_0}$, $\tl{p_0y_1z_1}$), so $c\subseteq c(v)$. The sizes force $r(u)=r$ and $c(v)=c$. Now $\tl{x_1y_0z_0}$ would put $\tl{x_1}$ at a $\tl{z_0}$ level, outside $r=r(u)$; $\tl{p_0y_1z_1}$ would put $\tl{p_0}$ at a $\tl{z_1}$ level, outside $r$; and $\tl{x_1q_0z_2}$ would put $\tl{q_0}$ at a $\tl{z_2}$ level, outside $c=c(v)$. So only the monomials of $T_4$ occur, each with coefficient $1$: $\tl{x_0y_0}$ at the $\tl{z_0}$ levels, $\tl{x_0y_1}$ at the $\tl{z_1}$ levels, $\tl{x_1y_0}$ at the $\tl{z_2}$ levels, and $\tl{x_1q_0}$ or $\tl{p_0y_1}$ at the $\tl{w_0}$ levels. With $P$ the set of $\tl{w_0}$ levels where $u$ has $\tl{p_0}$, the right string has $\tl{q_0}$ exactly on $S\setminus P$, and the nonzero summands are exactly $A[(r,P)]B[(c,S\setminus P)]$, $P\subseteq S$.
+\end{proof}
+
+\paragraph{The reading.} Let $d\ge1$, let $E$ be a field of characteristic $2$ with distinct elements $t_1,\dots,t_L$, and let $V:=E[\xi_1,\dots,\xi_d]/(\xi_1^2,\dots,\xi_d^2)$, with basis $\xi_T=\prod_{i\in T}\xi_i$, $T\subseteq[d]$. The \emph{Vandermonde forms} are $\varphi_l:=\sum_{i=1}^dt_l^{i-1}\xi_i\in V$, and $a(P):=\prod_{l\in P}\varphi_l$ for $P\subseteq[L]$ ($a(\emptyset)=1$). For a vector $x\in E^{2^d}$ indexed by the subsets of $[d]$ and $v=\sum_Tv_T\xi_T\in V$ put
+\[
+\pairL xv:=\sum_{T\subseteq[d]}x_T\,v_T,\qquad \pairR xv:=\sum_{T\subseteq[d]}x_T\,v_{[d]\setminus T}.
+\]
+For a $d$-set $S$ of levels let $\Phi_S$ be the $d\times d$ matrix with rows $(t_l^{i-1})_{i\in[d]}$, $l\in S$; its determinant is $\prod_{l<l'\in S}(t_l+t_{l'})\ne0$.
+
+\begin{proposition}[the reading]\label{prop:B}
+For every $d$-set $S\subseteq[L]$ and all $x,y\in E^{2^d}$,
+\[
+\sum_{P\subseteq S}\pairL x{a(P)}\,\pairR y{a(S\setminus P)}=\det(\Phi_S)\sum_{T\subseteq[d]}x_T\,y_T.
+\]
+\end{proposition}
+
+\begin{proof}
+In $V\otimes V=E[\xi_i,\eta_i]/(\xi_i^2,\eta_i^2)$, expanding the product level by level,
+\[
+\sum_{P\subseteq S}a(P)(\xi)\,a(S\setminus P)(\eta)=\prod_{l\in S}\bigl(\varphi_l(\xi)+\varphi_l(\eta)\bigr)=\prod_{l\in S}\varphi_l(\zeta),\qquad\zeta_i:=\xi_i+\eta_i.
+\]
+In characteristic $2$, $\zeta_i^2=\xi_i^2+\eta_i^2=0$, so in the expansion of $\prod_{l\in S}\sum_it_l^{i-1}\zeta_i$ only the injective maps $S\to[d]$ survive, which are bijections since $|S|=d$. The product is therefore $\perm(\Phi_S)\,\zeta_1\cdots\zeta_d=\det(\Phi_S)\,\zeta_1\cdots\zeta_d$, and $\zeta_1\cdots\zeta_d=\sum_T\xi_T\,\eta_{[d]\setminus T}$. The bilinear functional $v\otimes v'\mapsto\pairL xv\pairR y{v'}$ sends $\xi_T\otimes\eta_{T'}$ to $x_T\,y_{[d]\setminus T'}$, so it sends the left side of the display to $\sum_{P}\pairL x{a(P)}\pairR y{a(S\setminus P)}$ and the right side to $\det(\Phi_S)\sum_Tx_Ty_T$.
+\end{proof}
+
+\paragraph{The covering.} Let $s$ be the cyclic shift $l\mapsto l+1$ of $[L]$ (with $L\mapsto1$), and write $s=\theta_1\circ\dots\circ\theta_{L-1}$ as a product of transpositions. The $L(L-1)$ permutations
+\[
+\Pi_L:=\bigl(s^k\circ\theta_1\circ\dots\circ\theta_j\bigr)_{0\le k<L,\ 0\le j<L-1},
+\]
+in the order of $(k,j)$, form a sequence in which consecutive members differ by one transposition applied on the right, and which passes through every power $s^k$.
+
+\begin{lemma}[covering]\label{lem:C}
+For all sets of levels $r,c$ and every integer $d$ between $\min_k|r\cap s^k(c)|$ and $\max_k|r\cap s^k(c)|$, in particular for $d=\lfloor|r||c|/L\rfloor$, some $\pi\in\Pi_L$ has $|r\cap\pi(c)|=d$.
+\end{lemma}
+
+\begin{proof}
+If $\pi'=\pi\circ\theta$ for a transposition $\theta$, then $\theta(c)$ differs from $c$ by at most one exchanged element, so $|r\cap\pi'(c)|$ and $|r\cap\pi(c)|$ differ by at most $1$. Along the sequence the intersection size therefore takes every value between its minimum and maximum over the powers $s^k$. Each pair $l\in r$, $l'\in c$ has exactly one $k$ with $s^k(l')=l$, so the average of $|r\cap s^k(c)|$ over $k$ is $|r||c|/L$, and $\min\le\lfloor|r||c|/L\rfloor\le\max$.
+\end{proof}
+
+\section{Characteristic two: the algorithm and the proof of Theorem~\ref{thm:main}(a)}\label{sec:char2}
+
+\paragraph{Parameters.} Let $d:=\lceil\log_2m\rceil\ge1$, $L:=4d$ and $a:=L/2$, so that $d=a^2/L$, and let $D:=2^d\ge m$ and $\Nz:=\binom La$. Since $2^d<2m\le N^{1/4}$, we have $L<\log_2N$ and $\Nz<2^L<N$. Pad the inner dimension of $X$ and $Y$ with zeros to $D$ and index it by the subsets $T\subseteq[d]$; pad $N$ with zero rows and columns to $N':=B\Nz$, $B:=\lceil N/\Nz\rceil$, so $N'<N+\Nz<2N$. Cut the rows of $X$ into $B$ \emph{row bands} of $\Nz$ consecutive rows and the columns of $Y$ into $B$ \emph{column bands}. Fix an enumeration $r_1,\dots,r_{\Nz}$ of the $a$-subsets of $[L]$; row $\nu$ of every row band and column $\mu$ of every column band get the labels $r_\nu$ and $r_\mu$. Fix distinct $t_1,\dots,t_L\in E$ (possible since $|E|\ge L$). The algorithm and Proposition~\ref{prop:correct} below are written for these parameters, but they hold verbatim for any integers $L>a\ge1$ with $d:=\lfloor a^2/L\rfloor\ge1$, $\Nz:=\binom La$ and $D:=2^d\ge m$, since Lemmas~\ref{lem:D} and~\ref{lem:C} and Proposition~\ref{prop:B} hold for all sizes; Remark~\ref{rem:beyond} uses this.
+
+\paragraph{The algorithm.}
+\begin{enumerate}[label=\arabic*.,start=0,leftmargin=*]
+\item \emph{Set-up} (independent of $X,Y$). The table $a(P)$ for all $P\subseteq[L]$ with $|P|\le d$, each as $a(P\setminus\{\max P\})\cdot\varphi_{\max P}$; the inverses $\det(\Phi_S)^{-1}$ for all $d$-sets $S$; and, for every pair $(\nu,\mu)\in[\Nz]^2$, the first $\pi\in\Pi_L$ with $|r_\nu\cap\pi(r_\mu)|=d$, which exists by Lemma~\ref{lem:C} with $|r|=|c|=a$ and $d=\lfloor a^2/L\rfloor$.
+\item \emph{Reading.} For each row band $\beta$ let $A_\beta[(r_\nu,P)]:=\pairL{X_I}{a(P)}$ for the row $I$ of band $\beta$ with label $r_\nu$ and all $P\subseteq r_\nu$ with $|P|\le d$. For each column band $\gamma$ and each $\pi\in\Pi_L$ let $B_{\gamma,\pi}[(\pi(r_\mu),Q)]:=\pairR{Y_J}{a(Q)}$ for the column $J$ of band $\gamma$ with label $r_\mu$ and all $Q\subseteq\pi(r_\mu)$ with $|Q|\le d$. All other entries of the arrays are $0$.
+\item \emph{Encoding.} $U_1^{\otimes L}A_\beta$ for every $\beta$ and $U_2^{\otimes L}B_{\gamma,\pi}$ for every $(\gamma,\pi)$ (Lemma~\ref{lem:rec}).
+\item \emph{Leaf products.} $(U_1^{\otimes L}A_\beta)_\tau(U_2^{\otimes L}B_{\gamma,\pi})_\tau$ for all $\tau\in[4]^L$, all band pairs $(\beta,\gamma)$ and all $\pi\in\Pi_L$.
+\item \emph{Decoding.} $M_{\beta,\gamma,\pi}:=\Mult(A_\beta,B_{\gamma,\pi})$ at all output strings, by $(U_3^\top)^{\otimes L}$ (Lemma~\ref{lem:rec}).
+\item \emph{Read-out.} For the entry $(I,J)$ in row $\nu$ of band $\beta$ and column $\mu$ of band $\gamma$, take $\pi$ from the table of step~0, put $S:=r_\nu\cap\pi(r_\mu)$, and output $\det(\Phi_S)^{-1}M_{\beta,\gamma,\pi}[(r_\nu,\pi(r_\mu))]$. Discard the padded entries.
+\end{enumerate}
+
+\begin{proposition}[correctness]\label{prop:correct}
+The algorithm outputs $XY$.
+\end{proposition}
+
+\begin{proof}
+Fix $(I,J)$ and its $\pi$, so $|S|=d$. The array $A_\beta$ is supported on left strings with $|r(u)|=a$, and $B_{\gamma,\pi}$ on right strings with $|c(v)|=|\pi(r_\mu)|=a$. By Lemma~\ref{lem:rec} the decoded value at $w=(r_\nu,\pi(r_\mu))$ is $\Mult(A_\beta,B_{\gamma,\pi})[w]$, and by Lemma~\ref{lem:D} it equals $\sum_{P\subseteq S}A_\beta[(r_\nu,P)]\,B_{\gamma,\pi}[(\pi(r_\mu),S\setminus P)]$. Every $P\subseteq S$ has $|P|\le d$, and row $I$ is the only row of band $\beta$ with label $r_\nu$, column $J$ the only column of band $\gamma$ placed at $\pi(r_\mu)$; so the entries in the sum are the read values $\pairL{X_I}{a(P)}$ and $\pairR{Y_J}{a(S\setminus P)}$. By Proposition~\ref{prop:B} the sum is $\det(\Phi_S)\sum_TX_I[T]Y_J[T]=\det(\Phi_S)(XY)[I,J]$, since the padding of the inner dimension is zero.
+\end{proof}
+
+\paragraph{The exact count.} With $K:=L(L-1)$ relabelings and $S_0:=\sum_{i\le d}\binom ai$, and since $\sum_{i\le d}\binom ai\binom di=\binom{a+d}d$, the operations of $E$ are as follows.
+
+\begin{table}[ht]
+\centering\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}llll@{}}
+\toprule
+step & multiplications & additions & inversions\\
+\midrule
+0, table $a(P)$ & $\sum_{i=1}^d\binom Li\,i\binom di$ & $\sum_{i=1}^d\binom Li\,(i-1)\binom di$ & \\
+0, determinants & $\binom Ld\max(\binom d2-1,0)$ & $\binom Ld\binom d2$ & $\binom Ld$\\
+1, reading & $(1+K)B\Nz\binom{a+d}d$ & $(1+K)B\Nz(\binom{a+d}d-S_0)$ & \\
+2, encoding & & $(1+K)B\cdot2(4^L-3^L)$ & \\
+3, leaf products & $KB^24^L$ & & \\
+4, decoding & & $KB^2\cdot3L4^{L-1}$ & \\
+5, read-out & $N^2$ & & \\
+\bottomrule
+\end{tabular}
+\caption{Operations of $E$ of the algorithm, read off its steps. The powers $t_l^{i-1}$ add at most $Ld$ multiplications to step~0, and the table of relabelings costs at most $K\Nz^2$ intersections of $L$-bit words, which are not operations of $E$.}\label{tab:count}
+\end{table}
+
+The entries are read off the steps. In step~0 a set $P$ of size $i$ multiplies an element of degree $i-1$, with $\binom d{i-1}$ monomials, by $\varphi_{\max P}$, which gives $\binom d{i-1}(d-i+1)=i\binom di$ products, and each of the $\binom di$ monomials of degree $i$ receives $i$ of them; a determinant is a product of $\binom d2$ sums. In step~1 a left string $(r,P)$ with $|P|=i$ costs $\binom di$ products and $\binom di-1$ additions, a row has $\binom ai$ such strings, and the left arrays are formed once per row band, the right ones once per column band and relabeling. Steps~2--4 are Lemma~\ref{lem:rec}, once per band and relabeling for the encodings and once per band pair and relabeling for the products and the decoding.
+
+\begin{lemma}\label{lem:perentry}
+For every $L\in4\Z_{\ge1}$ and every $B\ge1$ the total of Table~\ref{tab:count} is at most $2L^4N'^2$.
+\end{lemma}
+
+\begin{proof}
+Divide by the $N'^2=B^2\Nz^2$ padded entries. Every term of Table~\ref{tab:count} that depends on $B$ decreases in $B$ after the division, so it suffices to take $B=1$. For $L=4$ and $L=8$ the exact totals per entry are $475.44=1.857L^4$ and $6631.45=1.619L^4$. Let $L\ge12$. By~\eqref{eq:binom}, the leaf products and the decoding contribute $K(1+3L/4)4^L/\Nz^2\le L(L-1)(1+3L/4)\,2L\le\frac32L^4+\frac12L^3$ per entry, and the encodings $(1+K)\,2\cdot4^L/\Nz^2\le4L(L^2-L+1)\le4L^3$. The reading contributes at most $2(1+K)\binom{a+d}d/\Nz\le2L^2\sqrt{2L}\,2^{3L/4}2^{-L}\le L^3$, using $\binom{a+d}d\le2^{a+d}=2^{3L/4}$. The set-up contributes at most $2^L(2d2^d+d^2+Ld)\cdot2L/4^L<1$ and the read-out at most $1$. In total at most $\frac32L^4+\frac{11}2L^3+2\le2L^4$ for $L\ge12$.
+\end{proof}
+
+Asymptotically $4^L/\Nz^2\sim\pi L/2$, and the cost per entry is $\sim\frac{3\pi}8L^4=1.178L^4$; three factors make up the degree four: the $L(L-1)$ relabelings, the $L$ axes of the decoding, and the $\Theta(L)$ leaves per output pair.
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}(a)]
+Correctness is Proposition~\ref{prop:correct}. By Lemma~\ref{lem:perentry} the number of operations is at most $2L^4N'^2<8L^4N^2$, and $L<\log_2N$. The steps, the arrays and the covering table depend on $N$ and $m$ only; the field enters through the nodes $t_1,\dots,t_L$ and the constants computed from them in step~0, and no step tests a field element, so the algorithm is one straight-line program over every field of characteristic $2$ in which the nodes are distinct. The only products of two input-dependent quantities are the $KB^24^L$ leaf products of step~3, since steps 1, 2, 4 and 5 multiply by constants of $E$ only; each is the product of an $E$-linear form in $X$ and one in $Y$, and by~\eqref{eq:binom} there are $K4^L/\Nz^2\le2L^2(L-1)<2L^3$ of them per padded entry, at most $8L^3N^2$ in all.
+\end{proof}
+
+\begin{remark}\label{rem:constants}
+(i) For $N^{1/4}/2<m\le N^{1/4}$ the same algorithm works with $\Nz<16N$, so $N'<17N$ and the cost is at most $2\cdot17^2L^4N^2$ with $L<\log_2N+4$: still $O(N^2\log^4N)$. (ii) The inversions are of the $\binom L{L/4}<N$ input-independent constants $\det(\Phi_S)$; the algorithm is division-free given these constants. (iii) The covering table depends on $L$ only; it takes at most $L(L-1)\Nz^2$ intersections of $L$-bit words, that is $O(L^2\Nz^2)$ word operations. (iv) Of the $K$ relabelings only those that are the first covering one for some label pair are needed; for the factorization $s=(1\;L)\circ(1\;L{-}1)\circ\dots\circ(1\;2)$ of the implementation, at $L=6,8,10,12$ these are $16,21,46,55$ of $30,56,90,132$ (Section~\ref{sec:checks}); the numbers depend on the factorization. Any schedule needs at least $1/f\sim0.63\sqrt L$ runs per band pair, where $f$ is the fraction of label pairs at intersection $d$, so the degree of the polynomial in $L$ could be lowered by a better covering, though not the exponent $\alpha$.
+\end{remark}
+
+\begin{proof}[Proof of Corollary~\ref{cor:williams} in characteristic two]
+Let $E:=F$ if $|F|\ge L$. Otherwise $F=\GF(2^j)$ with $2^j<L$; let $k:=\lceil\log_2(L)/j\rceil$ and let $E$ be the extension of $F$ of degree $k$, so that $L\le|E|=2^{jk}<2^jL<L^2$. In both cases $E$ is the smallest extension of $F$ with at least $L$ elements, and $|E|=O(\log^2N)$. An irreducible polynomial of degree $k$ over $F$ is found by testing the fewer than $|E|$ monic candidates, each with $\poly(L)$ operations of $F$. An element of $E$ is then a vector of $k$ elements of $F$, of $O(\log\log N)$ bits in all; addition is the exclusive or, and the tables of multiplication and inversion, with $O(\log^4N)$ entries, are built in $\poly(\log N)$ time, after which an operation of $E$ takes $O(1)$ time. Any $L$ distinct elements of $E$ serve as nodes. For $m\le N^{1/4}/2$ the algorithm of Theorem~\ref{thm:main}(a) then takes $O(L^4N^2)$ time, the covering table adding at most $L(L-1)\Nz^2<L^2N^2$ word operations (Remark~\ref{rem:constants}(iii)), and for $N^{1/4}/2<m\le N^{1/4}$ Remark~\ref{rem:constants}(i) gives the same bound with $L<\log_2N+4$. Inputs over $F$ are inputs over $E$, and the product has its entries in $F$. Part~(iii) is Theorem~\ref{thm:main}(a) with the model paragraph of Section~\ref{sec:prelim}, since $k=[E:F]<\log_2L+1<\log_2\log_2N+1$.
+\end{proof}
+
+\section{Characteristic three}\label{sec:char3}
+
+Lemmas~\ref{lem:P3}, \ref{lem:rec}, \ref{lem:D} and~\ref{lem:C} hold over every commutative ring. What changes is the reading, and with it the parameters and the covering.
+
+\paragraph{Parameters.} Let $\alpha_3:=\log_23/8$, $d:=\lceil\log_3m\rceil$, $L:=8d$, $a:=L/2=4d$, so that $a^2/L=2d$; $D:=3^d\ge m$ and $\Nz:=\binom La$. If $m\le N^{\alpha_3}/3$, then $3^d<3m\le N^{\alpha_3}$, so $L<\log_2N$ and $\Nz<N$. The inner dimension is indexed by $T\in\{0,1,2\}^d$. One band pair has inner dimension $3^{L/8}=(2^L)^{\alpha_3}>\Nz^{\alpha_3}$, so the exponent $\alpha_3$ is reached exactly.
+
+\paragraph{The reading.} Let $E$ have characteristic $3$, let $V_3:=E[\xi_1,\dots,\xi_d]/(\xi_1^3,\dots,\xi_d^3)$ with basis $\xi^T$, $T\in\{0,1,2\}^d$, let $\varphi_l\in V_3$ be a linear form for each level and $a(P):=\prod_{l\in P}\varphi_l$. Put $\sigma(T):=(-1)^{|\{i:T_i=1\}|}$, $\pairL xv:=\sum_Tx_Tv_T$ and $\pairRt yv:=\sum_Ty_T\,\sigma(T)\,v_{2-T}$, with $2-T$ taken coordinatewise.
+
+\begin{proposition}\label{prop:B3}
+For every $2d$-set $S$ of levels and all $x,y\in E^{3^d}$,
+\[
+\sum_{P\subseteq S}\pairL x{a(P)}\,\pairRt y{a(S\setminus P)}=c(S)\sum_Tx_Ty_T,
+\]
+where $c(S)$ is the coefficient of $\prod_i\zeta_i^2$ in $\prod_{l\in S}\varphi_l(\zeta)\in E[\zeta_1,\dots,\zeta_d]$.
+\end{proposition}
+
+\begin{proof}
+As in Proposition~\ref{prop:B}, the left factor is $\prod_{l\in S}\varphi_l(\zeta)$ with $\zeta_i=\xi_i+\eta_i$, now in $E[\xi_i,\eta_i]/(\xi_i^3,\eta_i^3)$. In characteristic $3$, $\zeta_i^3=\xi_i^3+\eta_i^3=0$. Every monomial of $\prod_{l\in S}\varphi_l(\zeta)$ has degree $2d$, and the only monomial of degree $2d$ with all exponents at most $2$ is $\prod_i\zeta_i^2$; so the product is $c(S)\prod_i\zeta_i^2$. Since $2=-1$, $\zeta_i^2=\xi_i^2-\xi_i\eta_i+\eta_i^2$, and $\prod_i\zeta_i^2=\sum_T\sigma(T)\,\xi^T\eta^{2-T}$. The functional $v\otimes v'\mapsto\pairL xv\pairRt y{v'}$ sends $\xi^T\otimes\eta^{2-T}$ to $x_T\,y_T\,\sigma(T)$, so the left side is $c(S)\sum_T\sigma(T)^2x_Ty_T$.
+\end{proof}
+
+In characteristic $2$ the Vandermonde forms make every $\det(\Phi_S)$ nonzero with $L$ field elements. In characteristic $3$ the coefficient $c(S)$ is a sum over assignments with every fibre of size two, and it can vanish; for instance, $c(S)=(2d)!/2^d\equiv0\pmod 3$ for all forms equal to $(1,\dots,1)$ when $d\ge2$. Weighting the forms by powers of one element and an exchange argument isolate a unique lowest term.
+
+\begin{lemma}[isolation]\label{lem:M}
+For an indeterminate $z$ take the forms $\varphi^{(z)}_l:=(1,z^l,z^{2l},\dots,z^{(d-1)l})$, that is $\varphi^{(z)}_{l,i}=z^{l(i-1)}$. For every $2d$-set $S=\{s_1<\dots<s_{2d}\}$,
+\[
+c_S(z)=z^{W_{\min}(S)}g_S(z),\qquad g_S\in\F_3[z],\quad g_S(0)=1,\quad\deg g_S\le\Delta:=(L-1)\lfloor d^2/2\rfloor.
+\]
+\end{lemma}
+
+\begin{proof}
+Expanding, $c_S(z)=\sum_fz^{W(f)}$ over the maps $f:S\to[d]$ with $|f^{-1}(i)|=2$ for all $i$, where $W(f):=\sum_{l\in S}l\,(f(l)-1)$. If $f(l)<f(l')$ for levels $l<l'$, exchanging the two values keeps the fibre sizes and changes $W$ by $-(l'-l)(f(l')-f(l))<0$. So every minimiser of $W$ is non-increasing along $s_1<\dots<s_{2d}$, and there is exactly one non-increasing admissible $f$, namely $f(s_{2i-1})=f(s_{2i})=d+1-i$. The lowest coefficient is therefore $1$. The same argument gives a unique maximiser, the non-decreasing assignment, and $W_{\max}-W_{\min}=\sum_jc_js_j$ with $c_j:=2\lceil j/2\rceil-d-1$. These coefficients sum to $0$, are non-positive in the first half and non-negative in the second, so $\sum_jc_js_j=\sum_jc_j(s_j-s_1)\le(L-1)\sum_{c_j>0}c_j=(L-1)\lfloor d^2/2\rfloor$.
+\end{proof}
+
+\begin{corollary}[hitting sets]\label{cor:H}
+Let $E$ have characteristic $3$. (i) If $|E|-1\ge2\Delta$, at most $\lfloor\log_2\binom L{2d}\rfloor+1\le L$ elements $z\in E^\times$, chosen greedily from any $\max(1,2\Delta)$ of them, make some $c_z(S)$ nonzero for every $2d$-set $S$. (ii) If $z\in E$ is transcendental or algebraic of degree greater than $\Delta$ over $\F_3$, then $c_z(S)\ne0$ for every $S$.
+\end{corollary}
+
+\begin{proof}
+(i) For $z\ne0$, $c_z(S)=0$ iff $g_S(z)=0$, and $g_S$ is a nonzero polynomial of degree at most $\Delta$; so among $2\Delta$ candidates each $S$ is bad for at most half. Summing over the uncovered sets, the best candidate leaves at most half of them uncovered, and $\lfloor\log_2\binom L{2d}\rfloor+1$ rounds leave none. With $\binom L{L/4}\le2^{0.8113L}$ this is at most $0.82L+1\le L$ for $L\ge16$; for $L=8$ we have $d=1$, $\varphi_l=(1)$ and $c(S)=1$ for all $S$. (ii) The minimal polynomial of $z$ has degree greater than $\deg g_S$, so it does not divide the nonzero $g_S$.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main}(b) and~(c)]
+The algorithm is that of Section~\ref{sec:char2} with the parameters above, the forms $\varphi^{(z)}_l$, the pairing $\pairRt\cdot\cdot$ in place of $\pairR\cdot\cdot$, and division by $c_z(S)$ in place of $\det(\Phi_S)$, run once for each $z$ in a list $Z$ that hits every $2d$-set; in step~0 the covering table stores, for every label pair, the first $(z,\pi)\in Z\times\Pi_L$ with $|r_\nu\cap\pi(r_\mu)|=2d$ and $c_z(r_\nu\cap\pi(r_\mu))\ne0$, which exists by Lemma~\ref{lem:C} and the choice of $Z$. Correctness is the proof of Proposition~\ref{prop:correct} with Proposition~\ref{prop:B3} in place of Proposition~\ref{prop:B}. The cost of one form choice is that of Table~\ref{tab:count} with the rows of Table~\ref{tab:count3}: the squarefree monomials $\xi_T$, $T\subseteq[d]$, become the monomials $\xi^T$, $T\in\{0,1,2\}^d$, so $|P|$ runs to $2d$; the powers of $z$, the signs of the pairing $\pairRt\cdot\cdot$ and the inverses of the $c_z(S)$ are new rows; the division is done once, not per form choice; rows 2 to 4 are unchanged. With $|T|:=\sum_iT_i$ let
+\[
+M_k:=|\{T\in\{0,1,2\}^d:|T|=k\}|,\qquad P_k:=\sum_{|T|=k}|\{i:T_i\le1\}|,
+\]
+and let $M^-_k$ be the number of $T$ with $|T|=k$ and $\sigma(T)=-1$.
+
+\begin{table}[ht]
+\centering\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}llll@{}}
+\toprule
+step & multiplications & additions & other\\
+\midrule
+0, powers of $z$ & $(L-1)+L(d-2)$, $d\ge2$ & & \\
+0, table $a_z(P)$, $|P|\le2d$ & $\sum_{i=1}^{2d}\binom LiP_{i-1}$ & $\sum_{i=1}^{2d}\binom Li(P_{i-1}-M_i)$ & \\
+0, signs & & & $\sum_{i=1}^{2d}\binom LiM^-_i$ neg.\\
+0, inverses of the $c_z(S)$ & & & $\le\binom L{2d}$ inv.\\
+1, reading & $(1+K)B\Nz\sum_{i\le2d}\binom aiM_i$ & $(1+K)B\Nz\sum_{i\le2d}\binom ai(M_i-1)$ & \\
+5, read-out, once & $N^2$ & & \\
+\bottomrule
+\end{tabular}
+\caption{Characteristic three: the rows of Table~\ref{tab:count} that change, per form choice $z$; rows 2 to 4 are as in Table~\ref{tab:count}; the powers of $z$ cost nothing at $d=1$. A set $P$ of size $i$ costs one product per pair of a monomial $\xi^T$ of degree $i-1$ and a variable $\xi_j$ with $T_j\le1$, $P_{i-1}$ in all, and each of the $M_i$ monomials of degree $i$ receives at least one, hence $P_{i-1}-M_i$ additions. A row or column with $|P|=i$ costs $M_i$ products and $M_i-1$ additions in the reading. $c_z(S)$ is the coefficient of $\xi_1^2\cdots\xi_d^2$ in $a_z(S)$, read from the table.}\label{tab:count3}
+\end{table}
+
+Per padded entry and form choice the total is at most $1.6175L^4$ for every $L=8d\le256$, with the maximum at $L=8$ (Tables~\ref{tab:count} and~\ref{tab:count3} evaluated for each such $L$), and at most $2L^4$ for all $L$. For $L>256$ the reading costs less than one operation per padded entry, since $\sum_{i\le2d}\binom aiM_i\le2^a3^d=2^{0.699L}$ against $\Nz\ge2^L/\sqrt{2L}$; the set-up rows cost less than one, being at most $L2^{1.01L}$ against $\Nz^2\ge4^L/(2L)$; and rows 2 to 4 cost at most $\frac32L^4+\frac92L^3$, as in the proof of Lemma~\ref{lem:perentry}. %
+As in the proof of case~(a), the only products of two input-dependent quantities are the leaf products, by~\eqref{eq:binom} fewer than $2L^3$ per padded entry and element of $Z$, since the reading, the encodings, the decoding and the division by $c_z(S)$ multiply by constants of $E$ only. Case~(c) takes $Z$ from Corollary~\ref{cor:H}(i), $|Z|\le L$, so the cost is at most $2L\cdot L^4N'^2<8L^5N^2$, with fewer than $8L^4N^2$ essential multiplications; for fixed $N$, $m$ and $E$ the list $Z$ is fixed, so the computation on $X$ and $Y$ is a bilinear straight-line program; choosing $Z$ costs one set-up per candidate, $O(L^3\cdot L\,3^d\binom L{\le2d})=O(N^{1.01}\log^4N)$ operations, since $3^d\binom L{\le2d}\le2^{\alpha_3L}\,2^{h(1/4)L}<2^{1.01L}$, with $h(1/4)=0.8113$ the binary entropy, and $2^L<N$. Case~(b) takes $Z=(z)$ by Corollary~\ref{cor:H}(ii), so the cost is at most $2L^4N'^2<8L^4N^2$, with fewer than $8L^3N^2$ essential multiplications. For $N^{\alpha_3}/3<m\le N^{\alpha_3}$ the same algorithm works with $3^d<3N^{\alpha_3}$, hence $L<\log_2N+8$, $\Nz<2^8N$ and $N'<257N$, so its cost is still $O(N^2\log^4N)$ in case~(b) and $O(N^2\log^5N)$ in case~(c).
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:williams} in characteristic three]
+Let $E:=F$ if $|F|>2\Delta$, and otherwise the least extension of $F$ with more than $2\Delta$ elements. If $F=\GF(3^j)$ with $3^j\le2\Delta$, this is $\GF(3^{jk})$ with $3^{j(k-1)}\le2\Delta$, so $|E|\le3^j\cdot2\Delta<(2\Delta+1)^2$, and $|E|<3(2\Delta+1)$ if $F=\F_3$; in both cases $|E|=O(\log^6N)$. The field is built as in characteristic two, with tables of $O(\log^{12}N)$ entries, and an operation of $E$ takes $O(1)$ time. By case~(c) of Theorem~\ref{thm:main} the preprocessing takes $O(N^{1.01}\log^4N)$ time and the product $O(L^5N^2)$, and for $N^{\alpha_3}/3<m\le N^{\alpha_3}$ the bound $N'<257N$ keeps it $O(N^2\log^5N)$.
+
+For part~(ii), $x^2+x+2$ is irreducible over $\F_3$ and has order $8$, since $x^4\equiv-1$ modulo it. For $n\ge4$, $t:=n/2$ is a power of two, its prime factor $2$ divides $8$ but not $(3^2-1)/8=1$, and $3^2\equiv1\pmod4$, so $x^n+x^{n/2}+2$, which is $x^2+x+2$ with $x^t$ in place of $x$, is irreducible over $\F_3$~\cite[Theorem~3.35]{LN97}. An element of $F$ is a vector of $k$ digits; an addition takes $O(k)$ time, a multiplication $O(k^2)$ by the schoolbook method with reduction modulo the defining polynomial, and an inversion $O(k^2)$ by the extended Euclidean algorithm. The element $z:=x$ has degree $k>\Delta$ over $\F_3$, so by case~(b) of Theorem~\ref{thm:main} the product takes at most $8L^4N^2$ operations of $F$ and $O(k^2L^4N^2)$ time, and for $N^{\alpha_3}/3<m\le N^{\alpha_3}$ the bound $N'<257N$ keeps it $O(k^2N^2\log^4N)$. Inputs over a subfield of $F$ are inputs over $F$. With the example field, $k=n\le2\max(\Delta,1)<L^3/64+2$, so the time is $O(N^2\log^{10}N)$. A faster multiplication of polynomials over $\F_3$ replaces the factor $k^2$ by its time.
+\end{proof}
+
+\begin{remark}
+Drawing the forms at random from a set of at least $L/2$ field elements gives a Las Vegas algorithm with $8(0.82L+3)L^4N^2$ expected operations over a field with $O(\log N)$ elements when $F=\F_3$: $c(S)$ is a nonzero polynomial of degree $2d$ in the entries of the forms, so the Schwartz--Zippel lemma~\cite{Sch80,Zip79} bounds the probability that a draw misses $S$ by $1/2$. Its gain over case~(c) is the field size, $O(\log N)$ elements instead of more than $2\Delta=\Theta(\log^3N)$.
+\end{remark}
+
+\section{Characteristic three: a tensor of border rank six}\label{sec:t6}
+
+In characteristic three the reading works in $V_3=E[\xi_1,\dots,\xi_d]/(\xi_i^3)$, where each inner variable can carry the exponent two. The high cell of $T_4$, the output letter $\tl{w_0}$, has the slice $\tl{x_1q_0}+\tl{p_0y_1}$ of rank two, which gives each level at most the exponent one; so Section~\ref{sec:char3} needs $2d$ high levels for the inner dimension $3^d$, and its divisor $c(S)$ can vanish. This section replaces $T_4$ by a tensor whose high cell has a slice of rank three, $\mathtt a_0\mathtt b_2+\mathtt a_1\mathtt b_1+\mathtt a_2\mathtt b_0$ in letters $\mathtt a_e$, $\mathtt b_e$ of exponent $e$ defined below, which fits $V_3$ exactly: one high level per inner variable suffices, and the reading divides by $\det(\Phi_S)^2$, which never vanishes. Its decomposition has six terms, and it is used together with its transpose. The steps are those of Sections~\ref{sec:prelim} to~\ref{sec:char2}; what changes is the bookkeeping of the strings, the proof that the error terms vanish, which becomes a count of weights, and the covering, which acts on two groups of levels.
+
+\paragraph{The tensor.} Let
+\[
+T_6:=\tl{w_{00}}\,(\tl{x_0r_0}+\tl{p_0q_0}+\tl{o_0y_0})+\tl{x_0y_1z_{01}}+\tl{x_0y_2z_{02}}+\tl{x_1y_0z_{10}}+\tl{x_1y_1z_{11}}+\tl{x_1y_2z_{12}},
+\]
+with left letters $\tl{x_0},\tl{p_0},\tl{o_0},\tl{x_1}$, right letters $\tl{y_0},\tl{q_0},\tl{r_0},\tl{y_1},\tl{y_2}$ and output letters $\tl{w_{00}},\tl{z_{01}},\tl{z_{02}},\tl{z_{10}},\tl{z_{11}},\tl{z_{12}}$. The left letters fall into two \emph{row blocks}, $0=\{\tl{x_0},\tl{p_0},\tl{o_0}\}$ and $1=\{\tl{x_1}\}$, the right letters into three \emph{column blocks}, $0=\{\tl{y_0},\tl{q_0},\tl{r_0}\}$, $1=\{\tl{y_1}\}$ and $2=\{\tl{y_2}\}$, and the output letters form a $2\times3$ grid of \emph{cells}: $\tl{w_{00}}$ is the cell $(0,0)$ and $\tl{z_{ij}}$ the cell $(i,j)$. Every monomial of $T_6$ whose output letter is in cell $(i,j)$ has its left letter in row block $i$ and its right letter in column block $j$. The cell $(0,0)$ is the \emph{high cell}; the other five cells have slices of rank one in the \emph{outer} letters $\tl{x_0},\tl{x_1},\tl{y_0},\tl{y_1},\tl{y_2}$. We give $\tl{x_0},\tl{p_0},\tl{o_0}$ and $\tl{y_0},\tl{q_0},\tl{r_0}$ the \emph{exponents} $0,1,2$; with $(\mathtt a_0,\mathtt a_1,\mathtt a_2):=(\tl{x_0},\tl{p_0},\tl{o_0})$ and $(\mathtt b_0,\mathtt b_1,\mathtt b_2):=(\tl{y_0},\tl{q_0},\tl{r_0})$ the high slice is $\sum_{e=0}^2\mathtt a_e\mathtt b_{2-e}$. The transpose $T_6'$ is $T_6$ with left and right exchanged: its left letters are the right letters of $T_6$, its row blocks are the column blocks of $T_6$, and its cell $(j,i)$ is the cell $(i,j)$ of $T_6$, with the same output letter.
+
+\paragraph{The decomposition.} Give the row blocks $0,1$ the values $h_{\rm r}:=(-3,-5)$ and the column blocks $0,1,2$ the values $h_{\rm c}:=(4,-2,-1)$, and define the \emph{weight} of a letter by $h(s):=h_{\rm r}(i)$ for a left letter $s$ in row block $i$, $h(t):=h_{\rm c}(j)$ for a right letter $t$ in column block $j$, and $h(\tl z):=-h_{\rm r}(i)-h_{\rm c}(j)$ for the output letter $\tl z$ of cell $(i,j)$. The weight of a monomial $st\tl z$ is $h(s)+h(t)+h(\tl z)$. It depends only on the \emph{class} of the monomial, the cell $(i,j)$ of $\tl z$ together with the row block $i'$ of $s$ and the column block $j'$ of $t$: it is $h_{\rm r}(i')-h_{\rm r}(i)+h_{\rm c}(j')-h_{\rm c}(j)$, and in particular it is $0$ on every monomial of $T_6$.
+
+\begin{lemma}\label{lem:T6}
+Over $\F_3$, with the forms
+\[
+\renewcommand{\arraystretch}{1.1}
+\begin{array}{@{}c|l|l|l@{}}
+\lambda&(U_1)_\lambda&(U_2)_\lambda&(U_3)_\lambda\\\hline
+1&\tl{o_0}-\tl{p_0}-\tl{x_0}+\tl{x_1}&\tl{y_0}&\tl{w_{00}}+\tl{z_{01}}+\tl{z_{02}}-\tl{z_{10}}\\
+2&\tl{p_0}-\tl{x_0}-\tl{x_1}&\tl{y_0}+\tl{y_1}-\tl{y_2}+\tl{q_0}&\tl{w_{00}}+\tl{z_{01}}-\tl{z_{02}}+\tl{z_{10}}+\tl{z_{11}}\\
+3&\tl{x_0}-\tl{x_1}&-\tl{y_0}+\tl{y_1}+\tl{r_0}&\tl{w_{00}}-\tl{z_{02}}+\tl{z_{10}}-\tl{z_{11}}-\tl{z_{12}}\\
+4&\tl{x_0}+\tl{x_1}&-\tl{y_0}+\tl{y_1}+\tl{q_0}+\tl{r_0}&\tl{w_{00}}-\tl{z_{02}}+\tl{z_{10}}\\
+5&\tl{x_0}+\tl{p_0}-\tl{x_1}&\tl{y_1}-\tl{y_2}&-\tl{w_{00}}-\tl{z_{01}}+\tl{z_{02}}-\tl{z_{10}}-\tl{z_{11}}+\tl{z_{12}}\\
+6&\tl{x_0}&-\tl{y_0}-\tl{y_2}+\tl{r_0}&-\tl{w_{00}}-\tl{z_{10}}+\tl{z_{12}}
+\end{array}
+\]
+we have $\sum_{\lambda=1}^6(U_1)_\lambda(U_2)_\lambda(U_3)_\lambda=T_6+E_6$, where $E_6$ is the sum of the $30$ monomials of Table~\ref{tab:E6}, each of weight at least $1$. Exchanging $(U_1)_\lambda$ and $(U_2)_\lambda$ gives $T_6'+E_6'$, where $E_6'$ is $E_6$ with left and right letters exchanged, with the same weights.
+\end{lemma}
+
+\begin{proof}
+The six products have $175$ monomials before collecting. Collecting them over $\F_3$ leaves the eight monomials of $T_6$, each with coefficient $1$, and the $30$ monomials of Table~\ref{tab:E6} with the signs given there; this was also checked by computer (Section~\ref{sec:checks}). The weight of each class in the table follows from the block values, and all are positive. Exchanging the two factors of every term exchanges the left and the right letter of every monomial and keeps its coefficient and its weight.
+\end{proof}
+
+\begin{table}[ht]
+\centering\small
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}cccl@{}}
+\toprule
+output letter & cell & class $(i',j')$, weight & monomials $st$ of the class, with signs\\
+\midrule
+$\tl{z_{01}}$ & $(0,1)$ & $(0,0)$, $6$ & $\tl{o_0y_0}+\tl{p_0q_0}-\tl{x_0q_0}+\tl{x_0y_0}$\\
+ & & $(0,2)$, $1$ & $-\tl{x_0y_2}$\\
+ & & $(1,0)$, $4$ & $-\tl{x_1q_0}$\\
+$\tl{z_{02}}$ & $(0,2)$ & $(0,0)$, $5$ & $\tl{o_0y_0}-\tl{p_0q_0}+\tl{p_0y_0}+\tl{x_0r_0}-\tl{x_0y_0}$\\
+ & & $(1,0)$, $3$ & $-\tl{x_1y_0}$\\
+$\tl{z_{10}}$ & $(1,0)$ & $(0,0)$, $2$ & $-\tl{o_0y_0}+\tl{p_0q_0}-\tl{p_0y_0}+\tl{x_0r_0}-\tl{x_0y_0}$\\
+$\tl{z_{11}}$ & $(1,1)$ & $(0,0)$, $8$ & $\tl{p_0q_0}+\tl{p_0y_0}-\tl{x_0q_0}-\tl{x_0r_0}$\\
+ & & $(0,2)$, $3$ & $-\tl{x_0y_2}$\\
+ & & $(1,0)$, $6$ & $-\tl{x_1q_0}+\tl{x_1r_0}+\tl{x_1y_0}$\\
+$\tl{z_{12}}$ & $(1,2)$ & $(0,1)$, $1$ & $\tl{p_0y_1}$\\
+ & & $(0,2)$, $2$ & $-\tl{p_0y_2}+\tl{x_0y_2}$\\
+ & & $(1,0)$, $5$ & $\tl{x_1r_0}-\tl{x_1y_0}$\\
+\bottomrule
+\end{tabular}
+\caption{The $30$ monomials of $E_6$, each written as the product $st$ of its left and right letter, grouped by output letter and by class (the row block $i'$ of $s$ and the column block $j'$ of $t$), with their signs over $\F_3$ and the weight $h_{\rm r}(i')-h_{\rm r}(i)+h_{\rm c}(j')-h_{\rm c}(j)$ of the class. No monomial of $E_6$ has the output letter $\tl{w_{00}}$.}\label{tab:E6}
+\end{table}
+
+Scaling every letter by $\eps^{h}$, its weight, fixes the monomials of $T_6$ and multiplies those of $E_6$ by positive powers of $\eps$, so the border rank of $T_6$ over every field of characteristic three is at most $6$, and it is $6$, since the six output slices are linearly independent. As for $T_4$ (Remark~\ref{rem:border}), the algorithm uses the grading exactly instead of as a limit.
+
+\paragraph{Strings and bands.} Let $d\ge1$, $L':=3d$ and $L:=2L'=6d$. The levels $1,\dots,L'$ are of \emph{kind~I} and carry $T_6$, the levels $L'+1,\dots,L$ are of \emph{kind~II} and carry $T_6'$. A left string has at each level a left letter of the tensor of that level, that is, a left letter of $T_6$ at kind~I and a right letter of $T_6$ at kind~II; a right string the other way round; an output string has an output letter at every level. The \emph{row word} $R(u)$ of a left string $u$ is the sequence of the blocks of its letters, with values in $\{0,1\}$ at kind~I and in $\{0,1,2\}$ at kind~II, and the \emph{column word} $C(v)$ of a right string is defined in the same way, with values in $\{0,1,2\}$ at kind~I and in $\{0,1\}$ at kind~II. Let $\rho(R):=\{l:R_l=0\}$ and $\kappa(C):=\{l:C_l=0\}$, the levels with a letter of block $0$. A left string is determined by its row word $R$ and its \emph{exponent function} $e:\rho(R)\to\{0,1,2\}$, the exponents of its letters at the levels of block $0$; we write $u=(R,e)$, and likewise $v=(C,f)$ with $f:\kappa(C)\to\{0,1,2\}$. An output string is determined by its cell at every level, hence by a pair of a row word $R$ and a column word $C$, the cell at level $l$ being $(R_l,C_l)$ in the grid of the tensor of that level; we write it $w(R,C)$. Its \emph{high set} $S(R,C):=\rho(R)\cap\kappa(C)$ is the set of levels where it has the letter $\tl{w_{00}}$.
+
+A row word is of the \emph{row type} if it has exactly $a:=\lceil3d/2\rceil$ zeros at the kind-I levels and exactly $d$ of each value $0,1,2$ at the kind-II levels; a column word is of the \emph{column type} if it has $d$ of each value $0,1,2$ at the kind-I levels and exactly $a$ zeros at the kind-II levels. Then $|\rho(R)|=|\kappa(C)|=a+d$, and each type has
+\[
+\Nz:=\binom{3d}a\frac{(3d)!}{(d!)^3}<2^{3d}3^{3d}=6^{L/2}
+\]
+words. With $T_6$ alone the words of the rows would be over two blocks and those of the columns over three, so a band of rows would have at most $2^L$ rows against about $3^L$ columns in a band of columns; with half of the levels transposed both have about $6^{L/2}$.
+
+For arrays $A$ on left strings and $B$ on right strings, $\Mult(A,B)$ is defined as in Section~\ref{sec:prelim}, with $\gamma_l(s,t,z)$ the coefficient of $stz$ in $T_6+E_6$ at the kind-I levels and in $T_6'+E_6'$ at the kind-II levels. Lemma~\ref{lem:rec} carries over with its proof, which uses only that the per-level sum over the terms is $\gamma_l$: with $U_1^{(l)}$ the matrix of the left forms at level $l$ ($U_1$ of Lemma~\ref{lem:T6} at kind~I, its $U_2$ at kind~II), $U_2^{(l)}$ that of the right forms and $U_3$ that of the output forms, the $6^L$ products of corresponding entries of $(U_1^{(1)}\otimes\dots\otimes U_1^{(L)})A$ and $(U_2^{(1)}\otimes\dots\otimes U_2^{(L)})B$, decoded by $(U_3^\top)^{\otimes L}$, give $\Mult(A,B)$ at all $6^L$ output strings. The following lemma takes the place of Lemma~\ref{lem:D}.
+
+\begin{lemma}[separation]\label{lem:sep}
+Let $A$ be supported on left strings whose row word is of the row type and $B$ on right strings whose column word is of the column type. Then for every output string $w=w(R,C)$ with $R$ of the row type and $C$ of the column type, and $S:=S(R,C)$,
+\[
+\Mult(A,B)[w]=\sum_{e:S\to\{0,1,2\}}A[(R,e)]\,B[(C,2-e)],
+\]
+where $e$ and $2-e$ are extended by $0$ to $\rho(R)$ and to $\kappa(C)$.
+\end{lemma}
+
+\begin{proof}
+The weight of a string is the sum of the weights of its letters. All letters of a block have the same weight, so the weight of a left string is a sum over the levels of block values, determined by how many levels of each kind carry each block; the row type fixes these numbers. So all left strings in the support of $A$ have one weight $h_R$, the weight of every row word of the row type, and likewise all right strings in the support of $B$ have the weight $h_C$ of the column type. The output letter at a level with cell $(i,j)$ has minus the weight of row block $i$ and minus that of column block $j$, so $w$ has the weight $-h_R-h_C$. A pair $(u,v)$ contributes to $\Mult(A,B)[w]$ only if every level carries a monomial of $T_6+E_6$ or of $T_6'+E_6'$, each of weight at least $0$ by Lemma~\ref{lem:T6}, and the weights of these monomials add up to $h_R+h_C-h_R-h_C=0$. Hence every level carries a monomial of weight $0$, that is, one of $T_6$ or of $T_6'$. At a level whose cell is not the high cell, the only such monomial is that of the outer letters of the cell, so both strings have there a letter of the cell's blocks, with exponent $0$; at a level of $S$ the monomials are $\mathtt a_e\mathtt b_{2-e}\tl{w_{00}}$, $e=0,1,2$, each with coefficient $1$. Hence $R(u)=R$ and $C(v)=C$, the exponent function of $u$ vanishes off $S$, that of $v$ is $2$ minus that of $u$ on $S$ and $0$ off $S$, and each such pair contributes $A[u]B[v]$.
+\end{proof}
+
+For $T_4$ the same count, with the grading of Remark~\ref{rem:border}, is Lemma~\ref{lem:D}: there the weight of a left string is $|r(u)|$, and the case analysis in the proof of Lemma~\ref{lem:D} is what the weights do here at once.
+
+\paragraph{The reading.} Let $E$ have characteristic $3$ and distinct elements $t_1,\dots,t_L$, let $V_3$ have the basis $\xi^T$, $T\in\{0,1,2\}^d$, let $\varphi_l:=\sum_{i=1}^dt_l^{i-1}\xi_i$ be the Vandermonde forms in $V_3$ and $a(e):=\prod_l\varphi_l^{e_l}$ for a function $e$ from a set of levels to $\{0,1,2\}$. With $\pairL xv:=\sum_Tx_Tv_T$, we now pair $x_T$ with the coefficient of the complementary monomial $\xi^{2-T}$: $\pairR xv:=\sum_Tx_Tv_{2-T}$, with $2-T$ taken coordinatewise. $\Phi_S$ is the Vandermonde matrix of the nodes in $S$, as in Section~\ref{sec:lemmas}.
+
+\begin{proposition}[the reading of $T_6$]\label{prop:B6}
+For every $d$-set $S\subseteq[L]$ and all $x,y\in E^{3^d}$,
+\[
+\sum_{e:S\to\{0,1,2\}}\pairL x{a(e)}\,\pairR y{a(2-e)}=\det(\Phi_S)^2\sum_{T}x_T\,y_T,
+\]
+and $\det(\Phi_S)^2=\prod_{l<l'\in S}(t_l-t_{l'})^2\ne0$.
+\end{proposition}
+
+\begin{proof}
+In $V_3\otimes V_3=E[\xi_i,\eta_i]/(\xi_i^3,\eta_i^3)$, expanding level by level,
+\[
+\sum_{e:S\to\{0,1,2\}}a(e)(\xi)\,a(2-e)(\eta)=\prod_{l\in S}\bigl(\varphi_l(\xi)^2+\varphi_l(\xi)\varphi_l(\eta)+\varphi_l(\eta)^2\bigr)=\prod_{l\in S}\varphi_l(\zeta)^2,\qquad\zeta_i:=\xi_i-\eta_i,
+\]
+since $a^2+ab+b^2=(a-b)^2$ in characteristic $3$. Let $W:=E[\zeta_1,\dots,\zeta_d]/(\zeta_1^3,\dots,\zeta_d^3)$; it maps to $V_3\otimes V_3$ by $\zeta_i\mapsto\xi_i-\eta_i$, since $(\xi_i-\eta_i)^3=\xi_i^3-\eta_i^3=0$. In $W$ every linear form cubes to zero, $(\sum_ic_i\zeta_i)^3=\sum_ic_i^3\zeta_i^3=0$, so for every $d\times d$ matrix $M$ the substitution $\sigma_M:\zeta_k\mapsto\sum_iM_{ki}\zeta_i$ is an algebra endomorphism of $W$, and $\sigma_M\circ\sigma_{M'}=\sigma_{M'M}$. It preserves degrees, and the top degree $2d$ of $W$ is spanned by $\prod_i\zeta_i^2$, so $\sigma_M(\prod_i\zeta_i^2)=\chi(M)\prod_i\zeta_i^2$ for a multiplicative function $\chi$. For a transvection $\zeta_1\mapsto\zeta_1+c\zeta_2$ we have $\chi=1$, since every other term of $(\zeta_1+c\zeta_2)^2\zeta_2^2$ contains $\zeta_2^3$, and for a diagonal matrix $\chi$ is the product of the squared entries. Transvections and diagonal matrices generate $GL_d(E)$, so $\chi=\det^2$ on invertible matrices, and with $M=\Phi_S$ we get $\prod_{l\in S}\varphi_l(\zeta)^2=\det(\Phi_S)^2\prod_i\zeta_i^2$. Finally $\prod_i\zeta_i^2=\prod_i(\xi_i^2+\xi_i\eta_i+\eta_i^2)=\sum_T\xi^T\eta^{2-T}$, and the functional $v\otimes v'\mapsto\pairL xv\pairR y{v'}$ sends $\xi^T\otimes\eta^{T'}$ to $x_Ty_{2-T'}$; so it sends the left side of the display to the left side of the proposition and $\det(\Phi_S)^2\sum_T\xi^T\eta^{2-T}$ to $\det(\Phi_S)^2\sum_Tx_Ty_T$.
+\end{proof}
+
+The three terms of the high slice, each with coefficient $1$, are what make the per-level factor $\varphi_l(\xi)^2+\varphi_l(\xi)\varphi_l(\eta)+\varphi_l(\eta)^2$ the square of a linear form; this is the counterpart of $\varphi_l(\xi)+\varphi_l(\eta)$ in characteristic two, and the reason why the divisor is a power of a determinant.
+
+\paragraph{The covering.} A \emph{relabeling} is a pair $\pi=(\pi_1,\pi_2)$ of a permutation $\pi_1$ of the kind-I levels and a permutation $\pi_2$ of the kind-II levels. It acts on column words by $(\pi C)_{\pi(l)}:=C_l$, so it keeps the column type, and $\kappa(\pi C)=\pi(\kappa(C))$. Identify both groups of levels with $[L']$, let $s$ be the cyclic shift of $[L']$, written as $s=\theta_1\circ\dots\circ\theta_{L'-1}$ with transpositions $\theta_j$, and put $P_j:=\theta_1\circ\dots\circ\theta_j$. Let $\Pi^{\rm d}$ be the sequence that, for $k=0,\dots,L'-1$ in turn, runs through $(s^k\circ P_j,s^k)$ for $j=0,\dots,L'-2$ and then through $(s^{k+1},s^k\circ P_j)$ for $j=0,\dots,L'-2$. It has $K:=2L'(L'-1)=L(L-2)/2$ members; consecutive members differ by one transposition applied on the right of one factor, since $s^k\circ P_{L'-1}=s^{k+1}$; and it passes through $(s^k,s^k)$ for every $k$. The reading needs only the size of the high set, not the numbers of levels in the five other cells, so only one number has to be hit, as for $T_4$.
+
+\begin{lemma}[covering]\label{lem:C6}
+For every row word $R$ of the row type and every column word $C$ of the column type some $\pi\in\Pi^{\rm d}$ has $|S(R,\pi C)|=d$.
+\end{lemma}
+
+\begin{proof}
+Let $r_1,r_2$ be the parts of $\rho(R)$ at the kind-I and the kind-II levels, of sizes $a$ and $d$, and $c_1,c_2$ those of $\kappa(C)$, of sizes $d$ and $a$. Then $g(\pi):=|S(R,\pi C)|=|r_1\cap\pi_1(c_1)|+|r_2\cap\pi_2(c_2)|$. One transposition on the right of one factor changes one of the two terms by at most $1$, as in the proof of Lemma~\ref{lem:C}, so along $\Pi^{\rm d}$ the value $g$ takes every integer between its minimum and its maximum. By the averaging in that proof, the average of $g$ over the members $(s^k,s^k)$ is $|r_1||c_1|/L'+|r_2||c_2|/L'=2a/3$, which is $d$ for even $d$ and $d+1/3$ for odd $d$. So the minimum, an integer at most this average, is at most $d$, and the maximum is at least $d$.
+\end{proof}
+
+\paragraph{The algorithm.} Let $d:=\lceil\log_3m\rceil$, $L:=6d$, and $a$, $\Nz$ as above. Pad the inner dimension with zeros to $D:=3^d\ge m$ and index it by $T\in\{0,1,2\}^d$; pad $N$ to $N':=B\Nz$ with $B:=\lceil N/\Nz\rceil$, and cut $X$ into $B$ row bands and $Y$ into $B$ column bands of $\Nz$. Fix enumerations $R_1,\dots,R_{\Nz}$ of the row type and $C_1,\dots,C_{\Nz}$ of the column type; row $\nu$ of every row band gets the word $R_\nu$ and column $\mu$ of every column band the word $C_\mu$. The algorithm is that of Section~\ref{sec:char2} with the following changes. In step~0 the table holds $a(e)$ for all $e:[L]\to\{0,1,2\}$ with $1\le|\operatorname{supp}e|\le d$, each computed as $a(e-\delta_l)\varphi_l$ for the largest level $l$ of the support, where $e-\delta_l$ lowers $e_l$ by one; the divisors are $\det(\Phi_S)^{-2}$ for all $d$-sets $S$; and the covering table holds, for every pair $(\nu,\mu)$, the first $\pi\in\Pi^{\rm d}$ with $|S(R_\nu,\pi C_\mu)|=d$, which exists by Lemma~\ref{lem:C6}. In step~1, $A_\beta[(R_\nu,e)]:=\pairL{X_I}{a(e)}$ for the row $I$ of band $\beta$ with word $R_\nu$ and all $e$ on $\rho(R_\nu)$ with $|\operatorname{supp}e|\le d$, and $B_{\gamma,\pi}[(\pi C_\mu,f)]:=\pairR{Y_J}{a(f)}$ for the column $J$ of band $\gamma$ with word $C_\mu$, every $\pi\in\Pi^{\rm d}$ and all $f$ on $\pi(\kappa(C_\mu))$ with $|\operatorname{supp}f|\le d$. Steps~2 to~4 use the forms of Lemma~\ref{lem:T6} and $6^L$ leaf products. In step~5 the entry $(I,J)$ is $\det(\Phi_S)^{-2}M_{\beta,\gamma,\pi}[w(R_\nu,\pi C_\mu)]$, with $\pi$ from the table and $S:=S(R_\nu,\pi C_\mu)$.
+
+\begin{proposition}\label{prop:correct6}
+The algorithm outputs $XY$.
+\end{proposition}
+
+\begin{proof}
+Fix $(I,J)$ and its $\pi$, so $|S|=d$. The array $A_\beta$ is supported on left strings with row words of the row type, and $B_{\gamma,\pi}$ on right strings with the column word $\pi C_\mu$, which is of the column type. By Lemma~\ref{lem:rec} the decoded value at $w=w(R_\nu,\pi C_\mu)$ is $\Mult(A_\beta,B_{\gamma,\pi})[w]$, and by Lemma~\ref{lem:sep} it is $\sum_{e:S\to\{0,1,2\}}A_\beta[(R_\nu,e)]\,B_{\gamma,\pi}[(\pi C_\mu,2-e)]$. Every such $e$, and $2-e$, has support of size at most $|S|=d$; row $I$ is the only row of band $\beta$ with word $R_\nu$, and column $J$ the only column of band $\gamma$ placed at $\pi C_\mu$; so the entries in the sum are the read values $\pairL{X_I}{a(e)}$ and $\pairR{Y_J}{a(2-e)}$. By Proposition~\ref{prop:B6} the sum is $\det(\Phi_S)^2(XY)[I,J]$, since the padding of the inner dimension is zero.
+\end{proof}
+
+\paragraph{The exact count.} Let $|T|:=\sum_iT_i$, $M_k:=|\{T\in\{0,1,2\}^d:|T|=k\}|$ and $P_k:=\sum_{|T|=k}|\{i:T_i\le1\}|$. Let $Q:=\sum_{j=0}^d\binom{a+d}j\sum_{i=0}^j\binom jiM_{j+i}$, the products of the reading per word, and $Q^-$ the same sum with $M_{j+i}-1$ in place of $M_{j+i}$; let $K=L(L-2)/2$ and
+\[
+\mathrm{enc}:=11\cdot4^{L'}\bigl(6^{L'}-5^{L'}\bigr)+\tfrac92\,6^{L'}\bigl(6^{L'}-4^{L'}\bigr).
+\]
+
+\begin{table}[ht]
+\centering\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}llll@{}}
+\toprule
+step & multiplications & additions & inversions\\
+\midrule
+0, powers & $L\max(d-2,0)$ & & \\
+0, table $a(e)$ & $\sum_{j=1}^d\binom Lj\sum_{i\le j}\binom jiP_{j+i-1}$ & $\sum_{j=1}^d\binom Lj\sum_{i\le j}\binom ji(P_{j+i-1}-M_{j+i})$ & \\
+0, divisors ($d\ge2$) & $\binom Ld\binom d2$ & $\binom Ld\binom d2$ & $\binom Ld$\\
+1, reading & $(1+K)B\Nz Q$ & $(1+K)B\Nz Q^-$ & \\
+2, encoding & & $(1+K)B\cdot\mathrm{enc}$ & \\
+3, leaf products & $KB^26^L$ & & \\
+4, decoding & & $KB^2\cdot20L\,6^{L-1}$ & \\
+5, read-out & $N^2$ & & \\
+\bottomrule
+\end{tabular}
+\caption{Operations of $E$ of the algorithm of Section~\ref{sec:t6}, read off its steps. The covering table costs $K\Nz^2$ intersections of $L$-bit words, which are not operations of $E$.}\label{tab:count6}
+\end{table}
+
+The entries are read off the steps as for Table~\ref{tab:count}. In step~0 a function $e$ with support of size $j$ and $i$ values $2$ has degree $j+i$; it multiplies an element of degree $j+i-1$ by a linear form, which costs $P_{j+i-1}$ products, and each of the $M_{j+i}$ monomials of degree $j+i$ receives at least one of them, so $P_{j+i-1}-M_{j+i}$ additions combine them. A divisor is the square of a product of $\binom d2$ differences. In step~1 a read value of degree $k$ costs $M_k$ products and $M_k-1$ additions, and a word has $\binom{a+d}j\binom ji$ exponent functions with support of size $j$ and $i$ values $2$. In step~2 the rows of $U_1$ have $4,3,2,2,3,1$ nonzero entries and those of $U_2$ have $1,4,3,4,2,3$, all $\pm1$ and each row with an entry $+1$, so $9$ and $11$ additions per fibre and no multiplication; each array has $L'$ axes with five letters and $L'$ with four, and taking the five-letter axes first gives $\mathrm{enc}$. In step~4 the six output letters $\tl{w_{00}},\tl{z_{01}},\tl{z_{02}},\tl{z_{10}},\tl{z_{11}},\tl{z_{12}}$ receive $6,3,5,6,3,3$ of the six terms, again with coefficients $\pm1$ and an entry $+1$ each, so $20$ additions per fibre.
+
+\begin{lemma}\label{lem:perentry6}
+For every $d\ge1$ and every $B\ge1$ the total of Table~\ref{tab:count6} is at most $L^6N'^2$, and the leaf products are at most $L^5N'^2/4$.
+\end{lemma}
+
+\begin{proof}
+As in the proof of Lemma~\ref{lem:perentry} it suffices to take $B=1$ and to bound the operations per padded entry. For $d\le150$ we evaluated the table exactly (Section~\ref{sec:checks}): the total per entry is $0.9601L^6$ at $d=1$ and at most $0.63L^6$ for $2\le d\le150$, and the leaf products are at most $\frac29L^5$, the value at $d=1$. Let $d\ge31$, so $L\ge186$, and put $u:=6^L/\Nz^2$. Robbins' bounds on factorials~\cite{Rob55} give $\binom n{\lceil n/2\rceil}\ge2^n\sqrt{2/(\pi(n+1))}\,e^{-1/(3n)}$ and $(3d)!/(d!)^3\ge3^{3d}\sqrt3\,e^{-1/(4d)}/(2\pi d)$, hence $\Nz^2\ge6^{6d}\cdot3e^{-13/(18d)}/(2\pi^3d^2(3d+1))$ and $u\le\frac{\pi^3}{108}L^2(L+2)e^{13/(3L)}\le0.2971L^3$. Per entry, the decoding contributes $\frac{10}3KLu\le\frac53L^3u\le0.4952L^6$, the leaf products $Ku\le0.1486L^5$, the encodings at most $(1+K)(11(2/3)^{L'}+\frac92)u\le0.67L^5$, and the reading at most $2(1+K)Q/\Nz\le1$, since $Q\le3^{a+2d}$ and $\Nz\ge6^{3d}/(14d^{3/2})$; the set-up and the read-out contribute at most $1$ each. In total this is at most $0.51L^6$.
+\end{proof}
+
+Asymptotically $u\sim\pi^3L^3/108$, and the cost per entry is $\sim\frac{5\pi^3}{324}L^6=0.478L^6$, of which the decoding is more than $97\%$ from $d=9$ on. Three factors make up the degree six: the $L(L-2)/2$ relabelings, the $L$ axes of the decoding, and the $\Theta(L^3)$ leaves per output pair, since a band side loses a factor $\Theta(\sqrt L)$ on its word over two blocks and $\Theta(L)$ on its word over three.
+
+\begin{proof}[Proof of Theorem~\ref{thm:t6}]
+Correctness is Proposition~\ref{prop:correct6}. Since $3^{d-1}<m$, we have $3^d<3m\le N^{\alpha_6}$, and $6^{3d}=(3^d)^{1/\alpha_6}$ because $3\ln6/\ln3=1/\alpha_6$; so $\Nz<6^{3d}<N$, $N'<N+\Nz<2N$ and $L=6d<2\log_6N$. By Lemma~\ref{lem:perentry6} the number of operations is at most $L^6N'^2<4L^6N^2$, and $4L^6<256\log_6^6N<0.86\log_2^6N$. As in the proof of Theorem~\ref{thm:main}(a), the steps, the arrays and the covering table depend on $N$ and $m$ only, the field enters through the nodes and the constants computed from them in step~0, and no step tests a field element; so the algorithm is one straight-line program over every field of characteristic three in which the nodes are distinct. The only products of two input-dependent quantities are the leaf products of step~3, each the product of an $E$-linear form in $X$ and one in $Y$; by Lemma~\ref{lem:perentry6} there are at most $L^5N'^2/4<L^5N^2$ of them, and $L^5<32\log_6^5N<0.28\log_2^5N$.
+\end{proof}
+
+\begin{remark}\label{rem:constants6}
+(i) For $N^{\alpha_6}/3<m\le N^{\alpha_6}$ the same algorithm works with $6^{3d}<(3m)^{1/\alpha_6}\le3^{1/\alpha_6}N=216N$, so $\Nz<216N$, $N'<217N$ and $L<2\log_6N+6$, and the cost is still $O(N^2\log^6N)$: the exponent $\alpha_6$ is reached exactly. (ii) The inversions are of the $\binom Ld$ input-independent constants $\det(\Phi_S)^2$, and the covering table takes $K\Nz^2<L^2\Nz^2/2$ intersections of $L$-bit words. (iii) The deterministic covering is not the cheapest possible. A relabeling drawn uniformly at random brings a given label pair to $|S|=d$ with a probability $f$ that is the same for all pairs; computed exactly at twelve values of $d$ between $2$ and $64$, $f\sqrt L$ lies between $1.49$ and $1.69$. Then $\lceil\ln(2\Nz^2)/f\rceil$ random relabelings, fewer than $K$ from $d=2$ on ($36$ against $60$ at $d=2$, $2608$ against $17112$ at $d=31$), cover all label pairs with probability at least $1/2$, and the covering table shows whether they do. A proof that $f\ge c/\sqrt L$ for all $d$ would therefore give a Las Vegas algorithm with $O(L^{5.5})$ operations per entry; without such a proof, the deterministic covering is the cheapest one proved for all $d$.
+\end{remark}
+
+\begin{proof}[Proof of Corollary~\ref{cor:williams}(iv)]
+Let $E:=F$ if $|F|\ge L$. Otherwise $F=\GF(3^j)$ with $3^j<L$, and $E$ is the extension of $F$ of degree $k:=\lceil\log_{3^j}L\rceil<\log_3L+1$, with $L\le|E|<3^jL<L^2$ elements, and fewer than $3L$ if $F=\F_3$. In both cases $E$ is the smallest extension of $F$ with at least $L$ elements and $|E|=O(\log^2N)$; it is built and tabulated as in the proof in characteristic two, with tables of $O(\log^4N)$ entries, and then an operation of $E$ takes $O(1)$ time. Any $L$ distinct elements of $E$ serve as nodes. By Theorem~\ref{thm:t6} and Remark~\ref{rem:constants6}(i) the product takes $O(L^6N^2)$ operations of $E$, and the covering table adds $K\Nz^2=O(L^2N^2)$ word operations, so the time is $O(N^2\log^6N)$. Inputs over $F$ are inputs over $E$, and the product has its entries in $F$. The rank bound is Theorem~\ref{thm:t6} over $E$ with the model paragraph of Section~\ref{sec:prelim}, since $k<\log_3L+1<\log_3\log_2N+1$.
+\end{proof}
+
+\section{Limits of the method}\label{sec:limits}
+
+\paragraph{Why $1/4$.} Within this construction, the following count shows that $1/4$ is the limit for full products with polylogarithmic overhead. A run with rows of size $a$ and columns of size $b$ costs $4^L$ leaf products and yields at most $\binom La\binom Lb$ entries, so polylogarithmic overhead forces $\binom La\binom Lb\ge4^L/\poly(L)$, that is $a,b=L/2+O(\sqrt{L\log L})$; and a run yields only the pairs at one intersection size $d$, a fraction $f(d)$ of all pairs, so it also forces $f(d)\ge1/\poly(L)$, that is $d=L/4+O(\sqrt{L\log L})$. With $D=2^d$ this gives $m\le N^{1/4}2^{O(\sqrt{\log N\log\log N})}$, and the construction attains this (Remark~\ref{rem:beyond}). Going beyond $1/4$ in characteristic two needs another base tensor; the last paragraph of this section says what it needs, and none is known to us.
+
+\begin{remark}\label{rem:beyond}
+The limit is attained: for every constant $c>0$ the construction computes the product of an $N\times m$ and an $m\times N$ matrix over a field of characteristic two with $m=N^{1/4+c\sqrt{\ln\ln N/\ln N}}$ in $N^2(\log N)^{O(1+c^2)}$ operations. Label rows and columns by $a$-subsets of the levels with $a=L/2+\lceil c'\sqrt{L\ln L}\,\rceil$, $c'$ a suitable multiple of $c$, and read the pairs at intersection $d=\lfloor a^2/L\rfloor=L/4+c'\sqrt{L\ln L}+O(\log L)$. Lemmas~\ref{lem:D} and~\ref{lem:C} and Proposition~\ref{prop:B} hold for every size, so the algorithm and its proof are unchanged. A band now has $\binom La\ge2^LL^{-O(1+c'^2)}$ rows, so the cost per entry, $L(L-1)$ runs of $4^L\poly(L)$ operations per $\binom La^2$ entries as in the proof of Lemma~\ref{lem:perentry}, grows to $L^{O(1+c'^2)}$, while the inner dimension $2^d$ grows by the factor $2^{c'\sqrt{L\ln L}+O(\log L)}$. With $L=\log_2N+O(\log\log N)$ this factor is $N^{\Theta(c'\sqrt{\ln\ln N/\ln N})}$. The exponent is still $1/4$: the gain is a factor $N^{o(1)}$.
+\end{remark}
+
+\paragraph{Characteristic $p$.} In characteristic $p$ the reading works in $E[\xi_1,\dots,\xi_d]/(\xi_i^p)$ with inner sets of size $(p-1)d=L/4$: Proposition~\ref{prop:B3} holds with $\prod_i\zeta_i^{p-1}$ and the signs $\binom{p-1}t\equiv(-1)^t\pmod p$, and Lemma~\ref{lem:M} with fibres of size $p-1$. The inner dimension is $p^{L/(4(p-1))}=(2^L)^{\log_2p/(4(p-1))}$, so $T_4$ reaches $\alpha=\log_2p/(4(p-1))$: $1/4$, $0.19812$, $0.1451$ for $p=2,3,5$, below Coppersmith's $0.17227$ for every $p\ge5$. In characteristic three the tensor $T_6$ of Section~\ref{sec:t6} reaches more, $0.20438$. For $p\ge5$ we do not state a theorem.
+
+\paragraph{Characteristic $0$ and $\Z/2^l\Z$.} The reading needs commuting linear forms that square to zero. In characteristic $0$ a commutative algebra gives $(\sum_iu_i\xi_i)^2=2\sum_{i<j}u_iu_j\xi_i\xi_j\ne0$, and modulo $4$ already $(\xi_i+\eta_i)^2=2\xi_i\eta_i\ne0$. The exterior algebra, where squares vanish, makes the factors anticommute: $a(P)\wedge a(S\setminus P)$ picks up the shuffle sign of $P$ in $S$, which depends on the row and the column jointly and does not split into a factor of the left string times a factor of the right string. Lemmas~\ref{lem:P3}, \ref{lem:rec}, \ref{lem:D} and~\ref{lem:C} hold over $\Z$, so the decomposition is not the obstacle; a version over $\Z$ would need several runs per band pair, or a different tensor.
+
+\paragraph{What a better tensor needs.} The proofs of Sections~\ref{sec:lemmas} to~\ref{sec:t6} use the base tensor only through a few properties. The bound $\alpha(T)$ below needs only two of them, that the outputs lie in distinct cells and that the tensor is tight; the weight and the lossless reading are what let $T_4$ and $T_6$ attain it. The left letters of $T_4$ and $T_6$ fall into row blocks and the right letters into column blocks; each output letter lies in a \emph{cell}, a pair of a row block and a column block, and its \emph{slice}, the sum of the products of a left and a right letter that it multiplies, lies in that cell. $T_4$ has a $2\times2$ grid and $T_6$ a $2\times3$ grid, each with one high cell, the only cell whose slice has rank more than one. First, the outputs lie in distinct cells, since an output string is read as the one entry of $XY$ at its row and its column. Second, the tensor is \emph{tight}: a run of a decomposition with $R$ terms costs $R^L$ products and yields at most $n^L$ entries, one per output string, where $n$ is the number of outputs, so polylogarithmic overhead forces $R=n$; and the error terms of the decomposition vanish on bands because a weight that is constant on the blocks is zero on the tensor and positive on every error term (Remark~\ref{rem:border}, Lemma~\ref{lem:T6}). Third, every high slice is read without loss: it is $\sum_{e=0}^{q-1}\mathtt a_e\mathtt b_{q-1-e}$ for letters $\mathtt a_e$, $\mathtt b_e$ with exponents $e$, and $q$ is a power of $p$, because the reading rests on the identity $\sum_{e=0}^{q-1}a^eb^{q-1-e}=(a-b)^{q-1}$, which holds in characteristic $p$ exactly when $q$ is a power of $p$; a slice of another rank is read with loss, as the slice of rank two of $T_4$ is in characteristic three (Section~\ref{sec:char3}). With distinct cells and tightness the count of the first paragraph bounds the exponent by
+\[
+\alpha(T):=\frac{2\sum_w\ln r_w}{n\ln n},
+\]
+where $r_w$ is the rank of the slice of the output $w$: the entry read from an output string is a bilinear form of rank at most the product of the ranks of the slices along the string, and the overhead forces each output to occur at about $L/n$ levels of the strings read and a band to have at least about $n^{L/2}$ rows. $T_4$ attains $\alpha(T_4)=1/4$ in characteristic two and $T_6$ attains $\alpha(T_6)=\alpha_6$. Two facts narrow the search. Products do not help: $\alpha(T\otimes T')$ is the mean of $\alpha(T)$ and $\alpha(T')$ weighted by $\ln n$ and $\ln n'$, so the powers of $T_4$ have many high cells but stay at $1/4$. And a single high cell does not suffice: the high slice has rank at most the rank of a flattening of $T$, which tightness bounds by $n$, so $\alpha(T)\le2/n$, which is at most $1/4$ for $n\ge8$, and the appendix shows $\alpha(T)\le1/4$ for every tight grid tensor with one high cell (Corollary~\ref{cor:onecell}). A tensor beyond $1/4$ therefore has several high cells. With several high cells the reading needs the number of levels in each of them, so the covering must bring every row--column pair to prescribed values of several numbers at once; random relabelings do this with probability $1/\poly(L)$ each, while Lemmas~\ref{lem:C} and~\ref{lem:C6} bring a single number to its value deterministically.
+
+\section{The reading as a convolution}\label{sec:conv}
+
+Proposition~\ref{prop:B} composes two steps of different nature, and separating them explains what the tensor contributes and what the field contributes.
+
+The first step is the identity $\sum_{P\sqcup Q=S}a(P)(\xi)\,a(Q)(\eta)=\prod_{l\in S}(\varphi_l(\xi)+\varphi_l(\eta))$, the binomial expansion, which holds in every characteristic. Together with Lemma~\ref{lem:D} it says what one run of $T_4$ computes: on the blocks ($\tl{x_0}$ against $\tl{x_1},\tl{p_0}$, and $\tl{y_0}$ against $\tl{y_1},\tl{q_0}$) a run pairs a row with a column, as a matrix product does; inside the high cell ($\tl{x_1}$ against $\tl{p_0}$, and $\tl{y_1}$ against $\tl{q_0}$) it distributes the shared levels $S$ between the two factors, as a subset convolution does. The tensor thus acts as a matrix product on the blocks and as a subset convolution inside the high cell.
+
+The second step is where characteristic two enters. Over every ring the inner product $\sum_TX[T]\,Y[[d]\setminus T]$ is the top coefficient of the product $X(\zeta)Y(\zeta)$ in $E[\zeta]/(\zeta_i^2)$, that is, the full-set coefficient of the subset convolution of $X$ and $Y$; characteristic two is what lets a run compute in this algebra, because then $\zeta_i=\xi_i+\eta_i$ is again square-zero. The Vandermonde forms map the $d$-fold product over any $d$-set $S$ onto that single coefficient, at the price of the scalar $\det(\Phi_S)$. In characteristic $p$ the same holds in $E[\zeta]/(\zeta_i^p)$, where the convolution adds base-$p$ digit vectors without carries, at the price of inner sets of size $(p-1)d$; for $T_4$ this gives the exponent $\alpha=\log_2p/(4(p-1))$, largest at $p=2$. The tensor $T_6$ avoids this price in characteristic three: its high slice $\sum_{e=0}^2\mathtt a_e\mathtt b_{2-e}$ gives the per-level factor $\varphi(\xi)^2+\varphi(\xi)\varphi(\eta)+\varphi(\eta)^2=\varphi(\zeta)^2$ with $\zeta_i:=\xi_i-\eta_i$, so a $d$-set of levels already reaches the top coefficient of $E[\zeta]/(\zeta_i^3)$ (Proposition~\ref{prop:B6}).
+
+\section{Consequences for the polynomial method}\label{sec:polymethod}
+
+Theorem~\ref{thm:main}(a), with Corollary~\ref{cor:williams} for the time over $\F_2$, is the analogue of Williams' Lemma 2.3~\cite{Wil14b} in characteristic two, with $0.172$ replaced by $1/4$. Which applications of the lemma evaluate over $\F_2$? Williams' randomized all-pairs shortest paths algorithm~\cite[Theorem~1.1]{Wil14a} reduces a $(\min,+)$ product to rectangular products over $\F_2$ via Razborov--Smolensky polynomials, and Abboud, Williams and Yu's randomized algorithm for orthogonal vectors~\cite[Lemma~2.2]{AWY15} evaluates a polynomial over $\F_2$ by an $n\times n^{0.1}\times n$ product over $\F_2$; both, and what is built on them, can use Theorem~\ref{thm:main}(a). Chan and Williams' deterministic versions~\cite{CW16} evaluate over $\Z/2^l\Z$ with $l\ge2$ through a large prime field, and the threshold-circuit algorithms~\cite{Wil14b,ACW16} mostly over $\Z$ or $\mathbb R$; Theorem~\ref{thm:main}(a) does not apply to these, but it does to the products that~\cite{ACW16} allows to be taken over $\F_2$, as for weighted MAX-4-SAT.
+
+Williams' and Abboud, Williams and Yu's algorithms use polynomials with at most $n^{0.1}$ monomials, the \emph{budget}, not even $n^{0.172}$, and state their savings with an unspecified constant in the exponent: $n^3/2^{\Omega(\sqrt{\log n})}$ and $n^{2-1/O(\log c)}$. That constant is what a larger budget $n^\alpha$ improves, and it can be read off their inequalities. In~\cite{Wil14a} the number of monomials is $2^{4.17(\log_2d)^2(1+o(1))}$ for blocks of size $d$, where $4.17=1+2\log_23$ is the leading coefficient in~\cite[inequality~(2)]{Wil14a}, so the largest block is $d=2^{\kappa\sqrt{\log_2n}}$ with $\kappa=\sqrt{\alpha/4.17}\,(1-o(1))$: $0.155$, $0.203$, $0.245$ at $\alpha=0.1$, $0.172$, $1/4$. Against a full use of Coppersmith's exponent the budget $1/4$ multiplies $\kappa$ by $1.21$, which speeds the algorithm up by a factor $2^{(0.042-o(1))\sqrt{\log_2n}}$, more than any power of $\log n$. In~\cite{AWY15}, for vectors of dimension $c\log n$, the saving is $n^\eps$ with $\eps=1/O(\log c)$ linear in $\alpha$, so the budget $1/4$ gives $n^{1.45\eps}$ in place of the $n^\eps$ of the budget $0.172$. Neither paper states its constant, so no published theorem changes; the algorithms get faster by factors that the $\Omega$ and $O$ of the published statements hide.
+
+Two facts limit where this matters. Recent preprints claim truly subcubic shortest-path algorithms, for integer weights of absolute value $n^{O(1)}$~\cite{AV26,Maj26}, one of them ours, and for real weights, Las Vegas~\cite[Theorem~35]{AV26} and deterministic~\cite{CIMY26,EZ26}; so Williams' bound is no longer the best claimed for either, and the gain in its constant concerns the polynomial method, not the best time for shortest paths. For orthogonal vectors with constant $c$ the saving $n^\eps$ is polynomial, so an overhead $N^{o(1)}$ is absorbed and the laser-method exponents, up to $0.321334$, already give a larger budget than $1/4$; Theorem~\ref{thm:main}(a) matters there only when $c=c(n)$ grows so fast that the saving is subpolynomial. Both algorithms are randomized, so the determinism of Theorem~\ref{thm:main}(a) buys them nothing. What Theorem~\ref{thm:main}(a) does change is the bar: an $N^{o(1)}$ overhead can exceed a saving of $2^{\kappa\sqrt{\log n}}$, whereas the $O(\log^4N)$ of Theorem~\ref{thm:main}(a) cannot. A characteristic-zero version at $1/4$ would serve the deterministic algorithms of~\cite{CW16} and the threshold-circuit algorithms as well (Section~\ref{sec:open}).
+
+By the Razborov--Smolensky approximation of OR by random parities~\cite{Raz87,Smo87}, Theorem~\ref{thm:main}(a) also gives Boolean $N\times N^{1/4}\times N$ products in $N^2\polylog N$ Monte Carlo time; but every known client of this regime applies the mask itself and then needs the $\F_2$ product, which is Theorem~\ref{thm:main}(a).
+
+\section{Implementation and crossover}\label{sec:checks}
+
+The scripts of this section, and of the other statements of this paper that were checked by computer, are at \url{https://github.com/Majdoddin/thin-matrix-products-polylog}, with their outputs.
+
+We implemented the algorithm exactly as in Section~\ref{sec:char2}, for inputs over $\F_2$ and over $\GF(16)$, computing in $\GF(16)$, with every field operation counted as executed. The counts equal Table~\ref{tab:count} term by term, and all entries are correct, at $L=6,8,10$ with two bands per side ($1600$, $19600$ and $254016$ entries; for $L\not\equiv0\pmod4$ we take $d=\lfloor L/4\rfloor$) and at $L=12$ with one and with two bands per side ($853776$ and $3415104$ entries, all $132$ relabelings); every output of every run at intersection $d$ was checked as well. As a control, omitting the division by $\det(\Phi_S)$ makes $39\%$ to $84\%$ of the entries wrong when $d\ge2$. At $L=12$ the decoding accounts for $75\%$ of the operations, the encodings for $16\%$ and the leaf products for $8\%$. A second implementation, written independently from the text, reproduced the counts and the results up to $L=12$. The characteristic-three algorithm was implemented in the same way and is exact at $L=8$ and, with rows and columns labelled by sets of different sizes $a\ne b$ and inner sets of size $2d=\lfloor ab/L\rfloor$, at $L=10$ and $12$, with inner sets where $c_z(S)=0$ present; a second implementation from the text was exact at $L=8$, at $L=9$ with label sizes $6$ and $6$ ($a^2/L=4=2d$) and at $L=11$ with label sizes $8$ and $9$, and reproduced the count.
+
+The algorithm of Section~\ref{sec:t6} was implemented in the same way, over $\GF(9)$ and $\GF(27)$, in code that takes the base tensor as a decomposition with a grading. At the parameters of Theorem~\ref{thm:t6} with $d=1$ ($L=6$, two bands per side), with four and with five levels of each kind ($d=2,3$), and with $T_6$ alone on seven and on nine levels with rectangular bands ($d=2,3$), where the row and column types are adapted to the levels and $d$ is the integer part of the average of $|S|$ in the proof of Lemma~\ref{lem:C6} (the proofs of Lemmas~\ref{lem:sep} and~\ref{lem:C6} and of Proposition~\ref{prop:correct6} use only that the types are fixed and that $d$ lies between the minimum and the maximum of $|S|$), all entries are correct (up to $63504$ per configuration), every other output at $|S|=d$ of every run is correct, and the executed counts equal those of Table~\ref{tab:count6} step by step. As a control, omitting the division by $\det(\Phi_S)^2$ makes $63\%$ to $77\%$ of the entries wrong when $d\ge2$, and the same code run on $T_4$ in characteristic two reproduces Table~\ref{tab:count}. A run at the parameters of Theorem~\ref{thm:t6} with $d=2$ needs $6^{12}$ leaf products. An independent check therefore evaluated $\Mult$ from its definition, with the error terms, at $77$ outputs read out at the parameters of the theorem for $d=2,3,4$ ($L=12,18,24$): the nonzero terms were exactly the pairs of Lemma~\ref{lem:sep}, and the values were $\det(\Phi_S)^2\sum_Tx_Ty_T$. The forms of Lemma~\ref{lem:T6} were expanded by computer, and the independent check confirmed Lemma~\ref{lem:sep} exactly for $d\le12$ by a dynamic programme over the numbers of levels in each class, Proposition~\ref{prop:B6} as a polynomial identity in a generic matrix for $d\le4$, and Lemma~\ref{lem:C6} exhaustively for $d\le3$, and it evaluated Table~\ref{tab:count6} for every $d\le150$.
+
+Like Coppersmith's, the algorithm is of theoretical interest only. From the exact count, in the model where one operation of $E$ is one step for our algorithm and one operation of $\F_2$ is one step for its competitors, our algorithm is cheaper than the textbook algorithm from $L=108$ on ($m=2^{27}$, $N\approx2^{104}$: one band of $\binom{108}{54}\approx2^{104.3}$ rows, so $m$ is slightly above $N^{1/4}$, and the count of Lemma~\ref{lem:perentry} holds for every number of bands), and cheaper than the Four Russians method~\cite{ADKF70} from $L=140$ on ($N\approx2^{136}$). Even an ideal covering schedule, with $1/f$ runs per band pair, does not bring the crossover with the textbook algorithm below $N\approx2^{49}$. The bound is a theoretical one, as is Coppersmith's.
+
+\section{Open problems}\label{sec:open}
+
+\begin{problem}
+Is there, over some field, an $N^2\polylog N$ bound for the $N\times N^\alpha\times N$ product with $\alpha>1/4$? Within the construction of this paper, in characteristic two this needs a base tensor $T$ with $\alpha(T)>1/4$ (Section~\ref{sec:limits}), hence with several high cells (Corollary~\ref{cor:onecell}), and, for a deterministic algorithm, a covering that brings several numbers to prescribed values at once; a search over small tensors has found no such tensor so far, and we know of no barrier against one.
+\end{problem}
+
+\begin{problem}
+Does the exponent $1/4$ with polylogarithmic overhead hold over $\Z$ or $\Q$? A reading of the subset convolution over $\Q$ with $\poly(L)$ runs per band pair would give it, and with it improvements of the constants of the deterministic polynomial-method algorithms~\cite{CW16} and of the threshold-circuit algorithms~\cite{Wil14b,ACW16}.
+\end{problem}
+
+\begin{problem}
+For $T_4$ in characteristic three, is there one choice of forms over a field with $\poly(L)$ elements that makes every $c(S)$ nonzero?
+\end{problem}
+
+\appendix
+\section{One high cell does not suffice}\label{app:onecell}
+
+This appendix proves that within the framework of Section~\ref{sec:limits} a base tensor with a single high cell has $\alpha(T)\le1/4$. For $n\ge8$ outputs this is the count given there; the cases $n\le7$ follow from Theorem~\ref{thm:onecell}, a statement about grid tensors whose border rank is at most their number of outputs. Its proof uses an algebra of pairs of operators that act alike on the tensor, a two-factor analogue of the $111$-algebra of Jelisiejew, Landsberg and Pal~\cite{JLP24}. They use it to study concise tensors of minimal border rank in $\mathbb C^m\otimes\mathbb C^m\otimes\mathbb C^m$, and remark that their constructions do not use the base field~\cite[Remark~1.13]{JLP24}. Our tensors need not be concise in the first factor, whose dimension may be smaller than the number of outputs, and their pair algebra need not be commutative; so we work with a commutative algebra obtained as a limit, and give a self-contained proof over every algebraically closed field, in particular in characteristics two and three.
+
+\paragraph{Grid tensors.} Let $\mathbb K$ be an algebraically closed field, $A=\bigoplus_iA_i$ and $B=\bigoplus_jB_j$ vector spaces with direct sum decompositions, $O$ a set of cells $(i,j)$, and $C$ a space with basis $(w_o)_{o\in O}$; the cells of $O$ with a fixed $i$ form \emph{row}~$i$, those with a fixed $j$ \emph{column}~$j$. A \emph{grid tensor} is $T=\sum_{o\in O}M_o\otimes w_o$ with $0\ne M_o\in A_i\otimes B_j$ for $o=(i,j)$; we read $M_o$ as a map $A^*\to B$, whose image $\operatorname{im}M_o\subseteq B_j$ has dimension the rank of the slice of $w_o$, and write $M_o:=0$ for a cell not in $O$. The $M_o$ lie in distinct summands $A_i\otimes B_j$ and are nonzero, so they are linearly independent. Put $n:=|O|=\dim C$. The \emph{$B$-flattening} of a tensor in $A\otimes B\otimes C$ is the tensor read as a linear map $A^*\otimes C^*\to B$, and likewise for $A$ and $C$. The image of the $B$-flattening of $T$ is $\sum_o\operatorname{im}M_o$; $T$ is \emph{concise in $B$} if this is all of $B$, that is, if every $B_j$ is the sum of the images of the $M_{ij}$, and likewise in $A$. The $C$-flattening of $T$ has rank $n$, by the independence of the $M_o$. $T$ has \emph{border rank at most $n$} if there are $a_k\in A[\eps]$, $b_k\in B[\eps]$, $c_k\in C[\eps]$ for $k\le n$ and $h\ge0$ with $\sum_{k=1}^na_k\otimes b_k\otimes c_k=\eps^hT+\eps^{h+1}T'$ for some $T'$ with entries in $\mathbb K[\eps]$~\cite{Bin80}. A tight base tensor of Section~\ref{sec:limits} has this property over its field, hence over the algebraic closure: scaling every letter in its decomposition with $n$ terms by $\eps$ to the power of its weight, as in Remark~\ref{rem:border}, fixes the tensor and multiplies every error term by a positive power of $\eps$, and multiplying each factor of each term by a power of $\eps$ makes all coefficients polynomial. Then every flattening of $T$ has rank at most $n$: for $\eps\ne0$ the flattenings of $T(\eps):=\eps^{-h}\sum_ka_k(\eps)\otimes b_k(\eps)\otimes c_k(\eps)=T+\eps T'(\eps)$ have rank at most $n$, so their minors of order $n+1$, which are polynomials in $\eps$, vanish identically, also at $\eps=0$, where $T(0)=T$. In particular $\dim A\le n$ and $\dim B\le n$ when $T$ is concise in $A$ and $B$.
+
+\begin{theorem}\label{thm:onecell}
+Let $T$ be a grid tensor over $\mathbb K$ that is concise in $B$, has border rank at most $n=|O|$, and has $\dim B=n$. If no row contains more than three cells of $O$, then every slice $M_o$ has rank one. The same holds with $A$ and $B$, and rows and columns, exchanged.
+\end{theorem}
+
+\begin{proof}
+We construct an $n$-dimensional commutative algebra $D^*$ of pairs of operators on $B$ and $C$ that act alike on $T$ and is stable under the torus of the grid. Its idempotents split $O$ into parts, each idempotent has the same rank on $B$, on $C$ and on $D^*$, a count shows that every part lies in one row, and then every slice in it has rank one.
+
+\emph{The pair algebra.} For $S\in A\otimes B\otimes C$, $Y\in\operatorname{End}B$ and $Z\in\operatorname{End}C$ write $Y\cdot S:=(1\otimes Y\otimes1)S$ and $Z\cdot S:=(1\otimes1\otimes Z)S$, and let $\mathcal A(S):=\{(Y,Z):Y\cdot S=Z\cdot S\}$. If $(Y,Z),(Y',Z')\in\mathcal A(S)$, then $YY'\cdot S=Y\cdot(Z'\cdot S)=Z'\cdot(Y\cdot S)=Z'Z\cdot S$, since operators on different factors commute; so $\mathcal A(S)$ is closed under the product $(YY',Z'Z)$, which reverses the order on $C$. We shall use only subspaces of $\mathcal A(T)$ that are closed under the componentwise product $(YY',ZZ')$ and commutative, and on these the two products agree. For our $T$, a pair in $\mathcal A(T)$ is determined by each of its components: $Z\cdot T=\sum_o M_o\otimes Zw_o=0$ forces $Z=0$ by the independence of the $M_o$, and $Y\cdot T=\sum_o YM_o\otimes w_o=0$ forces $Y$ to vanish on every image, hence $Y=0$ by conciseness in $B$.
+
+\emph{A fixed limit algebra.} For bases $(f_k)$ of $B$ and $(g_k)$ of $C$ (here $\dim B=\dim C=n$ is used), the \emph{diagonal pair algebra} is the set of pairs $(Y,Z)$ with $Yf_k=\lambda_kf_k$ and $Zg_k=\lambda_kg_k$ for some $\lambda\in\mathbb K^n$, an $n$-dimensional subspace of $\operatorname{End}B\times\operatorname{End}C$. Let $\mathcal D$ be the set of diagonal pair algebras of all pairs of bases and $\overline{\mathcal D}$ its closure in the Grassmannian $G$ of $n$-dimensional subspaces of $\operatorname{End}B\times\operatorname{End}C$. $G$ is a projective variety, hence so is $\overline{\mathcal D}$, and projective varieties are complete: for every variety $V$, the projection to $V$ of a closed subset of $\overline{\mathcal D}\times V$ is closed. Every $D\in\mathcal D$ (i) is closed under the componentwise product, (ii) is commutative, (iii) contains $(1,1)$, and (iv) for every $x=(Y,Z)\in D$ the characteristic polynomials of $Y$ on $B$, of $Z$ on $C$ and of the multiplication $u\mapsto xu$ on $D$ coincide; all three are $\prod_k(t-\lambda_k)$. Properties (i) to (iii) are closed conditions on $G$, and (iv) is a closed condition on the closed set where (i) holds, on which it is defined: on an affine chart of $G$ a subspace $D$ has a basis $x_1(D),\dots,x_n(D)$ depending regularly on $D$, so (i) to (iii) are rank conditions on regular functions; where (i) holds, the coefficients of $x_k(D)x_l(D)$ in this basis are regular; and for $x=\sum_k\mu_kx_k(D)$ the three characteristic polynomials are polynomials in $\mu$ and $t$ with regular coefficients, so (iv) is the vanishing of finitely many regular functions. So (i) to (iv) hold on $\overline{\mathcal D}$.
+
+The set $\mathcal I$ of pairs $(D,S)\in\overline{\mathcal D}\times(A\otimes B\otimes C)$ with $D\subseteq\mathcal A(S)$ is closed, since $D\subseteq\mathcal A(S)$ says that $Y\cdot S=Z\cdot S$ for each pair $(Y,Z)=x_k(D)$; so its projection to $A\otimes B\otimes C$ is closed. The $B$-flattening of $T=T(0)$ has rank $n$ (conciseness in $B$), so some $n\times n$ minor of the $B$-flattening of $T(\eps)$ is a polynomial in $\eps$ that is nonzero at $0$, and that flattening has rank $n$ for all but finitely many $\eps$; its image lies in the span of the $b_k(\eps)$, so these form a basis of $B$. Likewise the $c_k(\eps)$ form a basis of $C$ for all but finitely many $\eps$, since the $C$-flattening of $T$ has rank $n$. For such $\eps\ne0$ the diagonal pair algebra $D_\eps$ of $(b_k(\eps))$ and $(c_k(\eps))$ lies in $\mathcal A(T(\eps))$, because for its element with eigenvalues $\lambda$ both $Y\cdot T(\eps)$ and $Z\cdot T(\eps)$ are $\eps^{-h}\sum_k\lambda_ka_k\otimes b_k\otimes c_k$. So the $\eps\in\mathbb K$ with $T(\eps)$ in the projection of $\mathcal I$ form a closed subset of the line that contains all but finitely many points; it is the whole line, and it contains $0$. Hence $\mathcal F:=\{D\in\overline{\mathcal D}:D\subseteq\mathcal A(T)\}$ is nonempty and closed in $\overline{\mathcal D}$, hence projective.
+
+The torus $\Gamma$ of the grid, with one coordinate $s_i$ for every row and one coordinate $u_j$ for every column, acts on $A_i$, $B_j$ and $w_{ij}$ by $s_i$, $u_j$ and $(s_iu_j)^{-1}$, and on $\operatorname{End}B\times\operatorname{End}C$ by conjugation. It fixes $T$, so it preserves $\mathcal A(T)$; it maps diagonal pair algebras to diagonal pair algebras, so it preserves $\overline{\mathcal D}$; hence it preserves $\mathcal F$. By Borel's fixed point theorem~\cite[Theorem~10.4]{Bor91}, a connected solvable group such as $\Gamma$ acting on a nonempty projective variety has a fixed point; so some $D^*\in\mathcal F$ is $\Gamma$-stable. This is the torus-fixed limit of border apolarity~\cite[Theorem~4.3]{BB21}, taken there among limits of ideals of points in a multigraded Hilbert scheme and here among limits of diagonal pair algebras in a Grassmannian. In sum, $D^*\subseteq\mathcal A(T)$ is an $n$-dimensional commutative subalgebra of $\operatorname{End}B\times\operatorname{End}C$ that contains $(1,1)$, is $\Gamma$-stable and satisfies (iv).
+
+\emph{Characters.} We say character rather than weight, to avoid a clash with the weights of Sections~\ref{sec:prelim} to~\ref{sec:limits}. Since $D^*$ is $\Gamma$-stable, it is the direct sum of its character spaces $D^*_\chi$, on which $\Gamma$ acts by the character $\chi$. Let $0\ne(Y,Z)\in D^*_\chi$ and write $Zw_o=\sum_{o'}Z_{o'o}w_{o'}$; the condition $Y\cdot T=Z\cdot T$ reads $YM_{o'}=\sum_oZ_{o'o}M_o$ for every $o'$. If $\chi=1$, $Y$ preserves every $B_j$ and $Z$ every line $\mathbb Kw_o$, since the $w_o$ have distinct characters; so $Zw_o=z_ow_o$, and $Y$ acts on $\operatorname{im}M_o$ as the scalar $z_o$. If $\chi\ne1$, then $Y\ne0$ (first paragraph), so $\chi=u_{j'}/u_j$ for some $j\ne j'$, and $Y$ maps $B_j$ to $B_{j'}$ and vanishes on the other $B_l$; comparing the characters $(s_iu_l)^{-1}$ of the $w_{il}$ shows that $Z$ maps $w_{ij'}$ to $\zeta_iw_{ij}$ for scalars $\zeta_i$ (with $\zeta_i:=0$ unless $(i,j),(i,j')\in O$) and the other basis vectors to $0$, and then $YM_{ij}=\zeta_iM_{ij'}$. No other characters occur. Let $\mathfrak N_{jj'}:=D^*_{u_{j'}/u_j}$ and $\mathfrak N:=\bigoplus_{j\ne j'}\mathfrak N_{jj'}$. For $(Y,Z)\in\mathfrak N_{jj'}$ and $(Y',Z')\in\mathfrak N_{kk'}$, $YY'$ vanishes unless $k'=j$, and $Y'Y$ unless $j'=k$, since $Y$ vanishes outside $B_j$ and $Y'$ outside $B_k$; as $YY'=Y'Y$, both vanish unless $k'=j$ and $j'=k$, and then $YY'$ is supported on $B_{j'}$ and $Y'Y$ on $B_j$, so again both vanish. The pair $(YY',ZZ')$ lies in $D^*\subseteq\mathcal A(T)$ and has $YY'=0$, so $ZZ'=0$ by the first paragraph: $\mathfrak N^2=0$. And $\mathfrak N$ is an ideal, since a product of elements of characters $\chi$ and $\chi'$ has character $\chi\chi'$. The space $D^*_1$ maps injectively (first paragraph) and multiplicatively to $\mathbb K^O$ by $(Y,Z)\mapsto(z_o)_o$, onto a unital subalgebra. Every unital subalgebra $S$ of $\mathbb K^O$ consists of the functions constant on the \emph{parts} of a partition of $O$, the classes of cells on which all $f\in S$ agree: for parts $\gamma\ne\gamma'$ some $f\in S$ has $f(\gamma)\ne f(\gamma')$, so $(f-f(\gamma'))/(f(\gamma)-f(\gamma'))\in S$ is $1$ on $\gamma$ and $0$ on $\gamma'$, and the product of these over all $\gamma'\ne\gamma$ is the indicator of $\gamma$. For a part $\gamma$ let $e_\gamma\in D^*_1$ be its indicator, an idempotent: it acts on $C$ as the projection onto $C_\gamma:=\operatorname{span}\{w_o:o\in\gamma\}$, and on $B$ as an idempotent that is $1$ on the images of the $M_o$, $o\in\gamma$, and $0$ on the others, so its image is $B_\gamma:=\sum_{o\in\gamma}\operatorname{im}M_o$, as $B$ is the sum of all the images.
+
+\emph{Parts.} The characteristic polynomial of an idempotent on a space of dimension $m$ is $(t-1)^rt^{m-r}$ with $r$ the dimension of its image, in every characteristic. Let $L_\gamma:=e_\gamma D^*$; since $e_\gamma f=f(\gamma)e_\gamma$ for $f\in D^*_1$, $L_\gamma=\mathbb Ke_\gamma\oplus\mathfrak n_\gamma$ with $\mathfrak n_\gamma:=e_\gamma\mathfrak N\subseteq\mathfrak N$, so $\mathfrak n_\gamma^2=0$. Property (iv) at $x=e_\gamma$, whose images on $B$, $C$ and $D^*$ are $B_\gamma$, $C_\gamma$ and $L_\gamma$, gives $\dim B_\gamma=|\gamma|=\dim L_\gamma$, so $\dim\mathfrak n_\gamma=|\gamma|-1$.
+
+\emph{Rows.} Elements of $\mathfrak N$ act on $C$ inside rows, so $C_\gamma$ is the direct sum of the $L_\gamma$-stable spaces $C_{\gamma,i}:=\operatorname{span}\{w_{ij}:(i,j)\in\gamma\}$ over the $\rho$ rows $i$ that meet $\gamma$, of dimensions $r_i\ge1$ with $\sum_ir_i=|\gamma|$. An $x\in\mathfrak n_\gamma$ that vanishes on $C_\gamma$ vanishes on $C$, since $x=xe_\gamma$, and so $x=0$ by the first paragraph. Let $P_i$ be the span of the images of $C_{\gamma,i}$ under $\mathfrak n_\gamma$ and $\delta_i:=\dim P_i$. Since $\mathfrak n_\gamma^2=0$, every $x\in\mathfrak n_\gamma$ vanishes on $P_i$ and is determined on $C_{\gamma,i}$ by a linear map $C_{\gamma,i}/P_i\to P_i$; hence $|\gamma|-1=\dim\mathfrak n_\gamma\le\sum_i(r_i-\delta_i)\delta_i$. Every $r_i$ is at most $3$, the bound on the cells of a row, and for $1\le r\le3$ and $0\le\delta\le r$, $(r-\delta)\delta-(r-1)=(\delta-1)(r-1-\delta)\le0$: the factors are both positive only if $2\le\delta\le r-2$, and both negative only if $\delta=0$ and $r=0$. So $|\gamma|-1\le\sum_i(r_i-1)=|\gamma|-\rho$, and $\gamma$ lies in one row.
+
+\emph{End.} The cells of $\gamma$ lie in one row, hence in distinct columns, so $B_\gamma$ is the direct sum of their images and $|\gamma|=\dim B_\gamma=\sum_{o\in\gamma}\operatorname{rank}M_o$; every rank is one. The parts cover $O$. The second statement is the first with $A$ and $B$ exchanged.
+\end{proof}
+
+\begin{corollary}\label{cor:onecell}
+Let $T$ be a grid tensor over a field with $n$ outputs and border rank at most $n$, with one slice of rank $q\ge2$ and all other slices of rank one. Then $\alpha(T)=2\ln q/(n\ln n)\le1/4$, with equality for $T_4$.
+\end{corollary}
+
+\begin{proof}
+Pass to the algebraic closure; replace every $A_i$ by the sum of the images of the $M_{ij}$ read as maps $B^*\to A$, every $B_j$ by the sum of the images of the $M_{ij}$, and drop the rows and columns without a cell. This keeps the cells, the slices and their ranks, and the border rank bound (apply to the $a_k$ and the $b_k$ the projections onto the new spaces, which fix $T$), and makes $T$ concise in $A$ and $B$. Let the high cell be in row $0$ and column $0$, and let $k$ and $l$ be the numbers of other rows and columns. The high slice needs $q$ dimensions in $A_0$ and in $B_0$, every other $A_i$ and $B_j$ at least one, and $\dim A,\dim B\le n$, so $q+k\le n$ and $q+l\le n$; the $n$ cells are distinct cells of a $(1+k)\times(1+l)$ grid, so $n\le(1+k)(1+l)\le(1+n-q)^2$; and $n\ge q\ge2$. If $\alpha(T)>1/4$, then $n^{n/8}<q\le n$ forces $n\le7$, and $n\le(1+n-q)^2$ leaves only $(n,q)=(3,2),(4,3),(5,3),(6,4)$: for $n=2$ and $n=7$ no $q>n^{n/8}$ satisfies it, and for $n=3,\dots,6$ only the smallest such $q$ does. In each case $k,l\le n-q\le2$, so the grid has at most three rows and three columns, and $(1+k)(1+l)\ge n$ forces $l=n-q$ or $k=n-q$. If $l=n-q$, then $\dim B\ge q+l=n$, so $\dim B=n$, and every row has at most $1+l\le3$ cells: the first statement of Theorem~\ref{thm:onecell} makes every slice rank one, against $q\ge2$. If $k=n-q$, the second statement does the same, with $\dim A=n$ and at most $1+k\le3$ cells in every column. Equality: $T_4$ has $n=4$, $q=2$ and border rank $4$ (Remark~\ref{rem:border}).
+\end{proof}
+
+\begin{thebibliography}{VXXZ24}\setlength{\itemsep}{0pt}\small
+\bibitem[ACW16]{ACW16} Josh Alman, Timothy M. Chan, and Ryan Williams. Polynomial representations of threshold functions and algorithmic applications. In \emph{Proc.\ 57th IEEE Symposium on Foundations of Computer Science (FOCS 2016)}, pages 467--476. arXiv:1608.04355.
+\bibitem[ADKF70]{ADKF70} V.~L. Arlazarov, E.~A. Dinic, M.~A. Kronrod, and I.~A. Farad\v{z}ev. On economical construction of the transitive closure of an oriented graph. \emph{Soviet Mathematics Doklady}, 11:1209--1210, 1970.
+\bibitem[Alm21]{Alm21} Josh Alman. Kronecker products, low-depth circuits, and matrix rigidity. In \emph{Proc.\ 53rd ACM Symposium on Theory of Computing (STOC 2021)}, pages 772--785. arXiv:2102.11992.
+\bibitem[AV26]{AV26} Josh Alman and Virginia Vassilevska Williams. Truly subquadratic 3SUM and truly subcubic APSP via triangles in sparse lopsided graphs. arXiv:2610.06783, 2026.
+\bibitem[AvBZ26]{AvBZ26} Alimzhan Amanov, Maxim van den Berg, and Jeroen Zuiddam. Multiplying matrices via polynomials: exposition and barriers. arXiv:2610.30054, 2026.
+\bibitem[AWY15]{AWY15} Amir Abboud, Ryan Williams, and Huacheng Yu. More applications of the polynomial method to algorithm design. In \emph{Proc.\ 26th ACM-SIAM Symposium on Discrete Algorithms (SODA 2015)}, pages 218--230.
+\bibitem[BB21]{BB21} Weronika Buczy\'nska and Jaros\l{}aw Buczy\'nski. Apolarity, border rank, and multigraded Hilbert scheme. \emph{Duke Mathematical Journal}, 170(16):3659--3702, 2021. arXiv:1910.01944v2, whose numbering we cite.
+\bibitem[BCLR79]{BCLR79} Dario Bini, Milvio Capovani, Francesco Romani, and Grazia Lotti. $O(n^{2.7799})$ complexity for $n\times n$ approximate matrix multiplication. \emph{Information Processing Letters}, 8(5):234--235, 1979.
+\bibitem[BDH18]{BDH18} Cornelius Brand, Holger Dell, and Thore Husfeldt. Extensor-coding. In \emph{Proc.\ 50th ACM Symposium on Theory of Computing (STOC 2018)}, pages 151--164. arXiv:1804.09448, whose numbering we cite.
+\bibitem[BHKK07]{BHKK07} Andreas Bj\"orklund, Thore Husfeldt, Petteri Kaski, and Mikko Koivisto. Fourier meets M\"obius: fast subset convolution. In \emph{Proc.\ 39th ACM Symposium on Theory of Computing (STOC 2007)}, pages 67--74.
+\bibitem[Bin80]{Bin80} Dario Bini. Relations between exact and approximate bilinear algorithms. Applications. \emph{Calcolo}, 17(1):87--97, 1980.
+\bibitem[Bjo10]{Bjo10} Andreas Bj\"orklund. Determinant sums for undirected Hamiltonicity. In \emph{Proc.\ 51st IEEE Symposium on Foundations of Computer Science (FOCS 2010)}, pages 173--182.
+\bibitem[Bor91]{Bor91} Armand Borel. \emph{Linear Algebraic Groups}, 2nd edition. Graduate Texts in Mathematics 126. Springer, 1991.
+\bibitem[CIMY26]{CIMY26} Timothy M. Chan, Reina Itakura, Zhiyuan Ma, and Yuancheng Yu. 3SUM made simpler (without matrix multiplication), $k$-SUM hypothesis refuted for odd $k$, and real 3SUM/APSP derandomized. arXiv:2610.42012, 2026.
+\bibitem[Cop82]{Cop82} Don Coppersmith. Rapid multiplication of rectangular matrices. \emph{SIAM Journal on Computing}, 11(3):467--471, 1982.
+\bibitem[Cop97]{Cop97} Don Coppersmith. Rectangular matrix multiplication revisited. \emph{Journal of Complexity}, 13(1):42--49, 1997.
+\bibitem[CW16]{CW16} Timothy M. Chan and Ryan Williams. Deterministic APSP, orthogonal vectors, and more: quickly derandomizing Razborov--Smolensky. In \emph{Proc.\ 27th ACM-SIAM Symposium on Discrete Algorithms (SODA 2016)}, pages 1246--1255. Journal version in \emph{ACM Transactions on Algorithms} 17(1), 2021.
+\bibitem[CW19]{CW19} Lijie Chen and Ruosong Wang. Classical algorithms from quantum and Arthur--Merlin communication protocols. In \emph{Proc.\ 10th Innovations in Theoretical Computer Science Conference (ITCS 2019)}, LIPIcs 124, pages 23:1--23:20. arXiv:1811.07515, whose numbering we cite.
+\bibitem[EZ26]{EZ26} Isaac Barouch Essayag and Aryeh Lev Zabokritskiy. Faster deterministic all-pairs shortest paths with real edge weights. arXiv:2611.17215, 2026.
+\bibitem[HP98]{HP98} Xiaohan Huang and Victor Y. Pan. Fast rectangular matrix multiplication and applications. \emph{Journal of Complexity}, 14(2):257--299, 1998.
+\bibitem[JLP24]{JLP24} Joachim Jelisiejew, J.~M. Landsberg, and Arpan Pal. Concise tensors of minimal border rank. \emph{Mathematische Annalen}, 388(3):2473--2517, 2024. arXiv:2205.05713.
+\bibitem[Kou08]{Kou08} Ioannis Koutis. Faster algebraic algorithms for path and packing problems. In \emph{Proc.\ 35th International Colloquium on Automata, Languages and Programming (ICALP 2008)}, LNCS 5125, pages 575--586.
+\bibitem[KZHP08]{KZHP08} ShanXue Ke, BenSheng Zeng, WenBao Han, and Victor Y. Pan. Fast rectangular matrix multiplication and some applications. \emph{Science in China Series A: Mathematics}, 51(3):389--406, 2008.
+\bibitem[LG12]{LG12} François Le Gall. Faster algorithms for rectangular matrix multiplication. In \emph{Proc.\ 53rd IEEE Symposium on Foundations of Computer Science (FOCS 2012)}, pages 514--523.
+\bibitem[LGU18]{LGU18} François Le Gall and Florent Urrutia. Improved rectangular matrix multiplication using powers of the Coppersmith--Winograd tensor. In \emph{Proc.\ 29th ACM-SIAM Symposium on Discrete Algorithms (SODA 2018)}, pages 1029--1046.
+\bibitem[LN97]{LN97} Rudolf Lidl and Harald Niederreiter. \emph{Finite Fields}, 2nd edition. Encyclopedia of Mathematics and its Applications 20. Cambridge University Press, 1997.
+\bibitem[Maj26]{Maj26} Ruhollah Majdoddin. Thin matrix products up to $D\le N^{0.172}$ and lossless reductions for 3SUM, Exact Triangle and APSP, with 3SUM over abelian groups and a dichotomy for coordinatewise problems. arXiv:2610.17420, 2026.
+\bibitem[NS24]{NS24} Roy Nissim and Oded Schwartz. Revisiting ``Rapid multiplication of rectangular matrices''. \emph{Research in Mathematics}, 11(1):2388334, 2024.
+\bibitem[Raz87]{Raz87} Alexander A. Razborov. Lower bounds on the size of bounded depth circuits over a complete basis with logical addition. \emph{Mathematical Notes of the Academy of Sciences of the USSR}, 41(4):333--338, 1987.
+\bibitem[Rob55]{Rob55} Herbert Robbins. A remark on Stirling's formula. \emph{The American Mathematical Monthly}, 62(1):26--29, 1955.
+\bibitem[Sch80]{Sch80} Jacob T. Schwartz. Fast probabilistic algorithms for verification of polynomial identities. \emph{Journal of the ACM}, 27(4):701--717, 1980.
+\bibitem[Sch81]{Sch81} Arnold Schönhage. Partial and total matrix multiplication. \emph{SIAM Journal on Computing}, 10(3):434--455, 1981.
+\bibitem[Smo87]{Smo87} Roman Smolensky. Algebraic methods in the theory of lower bounds for Boolean circuit complexity. In \emph{Proc.\ 19th ACM Symposium on Theory of Computing (STOC 1987)}, pages 77--82.
+\bibitem[Uzn26]{Uzn26} Przemysław Uznański. Rectangular matrix multiplication from polynomial products. arXiv:2610.10494, 2026.
+\bibitem[VXXZ24]{VXXZ24} Virginia Vassilevska Williams, Yinzhan Xu, Zixuan Xu, and Renfei Zhou. New bounds for matrix multiplication: from alpha to omega. In \emph{Proc.\ 35th ACM-SIAM Symposium on Discrete Algorithms (SODA 2024)}, pages 3792--3835.
+\bibitem[Wil09]{Wil09} Ryan Williams. Finding paths of length $k$ in $O^*(2^k)$ time. \emph{Information Processing Letters}, 109(6):315--318, 2009.
+\bibitem[Wil14a]{Wil14a} Ryan Williams. Faster all-pairs shortest paths via circuit complexity. In \emph{Proc.\ 46th ACM Symposium on Theory of Computing (STOC 2014)}, pages 664--673. arXiv:1312.6680v2, whose numbering we cite.
+\bibitem[Wil14b]{Wil14b} Ryan Williams. New algorithms and lower bounds for circuits with linear threshold gates. In \emph{Proc.\ 46th ACM Symposium on Theory of Computing (STOC 2014)}, pages 194--202. arXiv:1401.2444, whose page numbers we cite.
+\bibitem[Zip79]{Zip79} Richard Zippel. Probabilistic algorithms for sparse polynomials. In \emph{Proc.\ EUROSAM 1979}, LNCS 72, pages 216--226.
+\end{thebibliography}
+
+\end{document}

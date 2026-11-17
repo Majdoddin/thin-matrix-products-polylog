@@ -1,0 +1,39 @@
+## Lemma 2.1 (read mod 2): sum of the four terms vs T4 + E3
+over Z, (sum of terms) - (T4 + E3) = [('x0y0w0', 2), ('x0y1w0', 2), ('x1y0w0', 2)]
+mod 2 equal: True
+
+## Lemma 2.3 (recursion = Mult by definition) and Lemma 3.1 (equal-size bands: Mult = subset convolution), GF(16)
+L=3: Lemma 2.3: 0 of 1024 outputs differ (all a0, b0); Lemma 3.1: 0 of 64 outputs with |r|=a0, |c|=b0 differ; control (left rows of sizes a0 and a0+1): 45 of 49 differ
+L=4: Lemma 2.3: 0 of 6400 outputs differ (all a0, b0); Lemma 3.1: 0 of 256 outputs with |r|=a0, |c|=b0 differ; control (left rows of sizes a0 and a0+1): 208 of 225 differ
+L=5: Lemma 2.3: 0 of 36864 outputs differ (all a0, b0); Lemma 3.1: 0 of 1024 outputs with |r|=a0, |c|=b0 differ; control (left rows of sizes a0 and a0+1): 875 of 961 differ
+
+## Proposition 3.2 (reading), GF(16), L = 8 levels, every d-set S, Vandermonde forms, random distinct t
+d=1: 0 of 24 (S, x, y) wrong; det(Phi_S) = 0 for 0; product formula != Gaussian det for 0; top coeff of a(S) != det for 0
+d=2: 0 of 84 (S, x, y) wrong; det(Phi_S) = 0 for 0; product formula != Gaussian det for 0; top coeff of a(S) != det for 0
+d=3: 0 of 168 (S, x, y) wrong; det(Phi_S) = 0 for 0; product formula != Gaussian det for 0; top coeff of a(S) != det for 0
+d=4: 0 of 210 (S, x, y) wrong; det(Phi_S) = 0 for 0; product formula != Gaussian det for 0; top coeff of a(S) != det for 0
+control over Z (d = 2, t = 1, 2, 3, x, y random in 0..4): identity holds?
+  S=(0, 1): lhs=54, det*ip=18, -det*ip=-18
+  S=(0, 2): lhs=72, det*ip=36, -det*ip=-36
+  S=(1, 2): lhs=90, det*ip=18, -det*ip=-18
+  S=(0, 1): lhs=55, det*ip=7, -det*ip=-7
+  S=(0, 2): lhs=78, det*ip=14, -det*ip=-14
+  S=(1, 2): lhs=133, det*ip=7, -det*ip=-7
+
+## Lemma 3.3 (covering by L(L-1) relabelings)
+L=4 adjacent (j-1 j): steps by one transposition: True; passes all s^k: True; pairs 196 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0; a=b=L/2: max first index 2, distinct first-covering relabelings 3 of 12
+L=4 star (0 L-j): steps by one transposition: True; passes all s^k: True; pairs 196 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0; a=b=L/2: max first index 2, distinct first-covering relabelings 3 of 12
+L=5 adjacent (j-1 j): steps by one transposition: True; passes all s^k: True; pairs 900 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0
+L=5 star (0 L-j): steps by one transposition: True; passes all s^k: True; pairs 900 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0
+L=6 adjacent (j-1 j): steps by one transposition: True; passes all s^k: True; pairs 3844 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0
+L=6 star (0 L-j): steps by one transposition: True; passes all s^k: True; pairs 3844 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0
+L=7 adjacent (j-1 j): steps by one transposition: True; passes all s^k: True; pairs 15876 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0
+L=7 star (0 L-j): steps by one transposition: True; passes all s^k: True; pairs 15876 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0
+L=8 adjacent (j-1 j): steps by one transposition: True; passes all s^k: True; pairs 64516 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0; a=b=L/2: max first index 19, distinct first-covering relabelings 19 of 56
+L=8 star (0 L-j): steps by one transposition: True; passes all s^k: True; pairs 64516 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0; a=b=L/2: max first index 20, distinct first-covering relabelings 21 of 56
+L=9 adjacent (j-1 j): steps by one transposition: True; passes all s^k: True; pairs 260100 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0
+L=9 star (0 L-j): steps by one transposition: True; passes all s^k: True; pairs 260100 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0
+L=10 adjacent (j-1 j): steps by one transposition: True; passes all s^k: True; pairs 1044484 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0
+L=10 star (0 L-j): steps by one transposition: True; passes all s^k: True; pairs 1044484 (sizes all 1..L-1), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0
+L=12 adjacent (j-1 j): steps by one transposition: True; passes all s^k: True; pairs 853776 (sizes a=b=L/2), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0; a=b=L/2: max first index 54, distinct first-covering relabelings 55 of 132
+L=12 star (0 L-j): steps by one transposition: True; passes all s^k: True; pairs 853776 (sizes a=b=L/2), uncovered at floor(a0 b0/L): 0; steps changing an intersection by >1: 0; a=b=L/2: max first index 54, distinct first-covering relabelings 55 of 132

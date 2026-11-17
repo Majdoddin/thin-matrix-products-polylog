@@ -1,0 +1,10 @@
+2 True
+4 True
+8 True
+16 True
+32 True
+64 True
+128 True
+256 True
+512 True
+1024 True

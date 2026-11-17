@@ -1,0 +1,14 @@
+Full product, characteristic 3: L=10 a=5 b=8 s=2d=4 d=2 D=3^d=9 B=2 inputs=F3 E=GF(3^4) (h=[2, 0, 0, 1, 1], g=X) zmode=single:8 schedule=first control=none seed=1
+P3 check over Z: signed form = T4 - E3: True; plus-sign form minus (T4 + E3) = {'x1y0w0': np.int64(2), 'x0y1w0': np.int64(2), 'x0y0w0': np.int64(2)}
+N_r = 504 (N0r = C(L,a) = 252), N_c = 90 (N0c = C(L,b) = 45); direct product computed
+covering: max_S Delta(S) = 16; single z = g^8 (control: pairs whose every covering relabeling meets a bad S stay uncovered); preprocessing field operations {'mul': 0, 'add': 0, 'neg': 0, 'inv': 0}
+set-up per z: z=17 (log 8): 30 of 210 sets S bad
+sets S bad for every z in Z: 30
+Pi_L: 90 relabelings; covering table over 1 x 90 (z, pi): 0 of 11340 label pairs uncovered; first-covering (z, pi) runs: 37; per z: [37]; bit-operation table 1020600 popcount/lookups
+end to end: 45360 of 45360 entries computed; wrong entries of the assembled product: 0 (of which not computed: 0); class outputs of every executed tile-run: good S 799200 checked, 0 wrong; bad S (c_z(S) = 0) 133200 checked, 0 with raw value != 0
+time 46.4s for 37 (z, pi) runs x 4 band pairs
+counted (schedule first, 1 z, 37 (z, pi) runs): mul 156211370, add 1314745199, neg 260, inv 180, total 1470957009; formula mul 156211370, add 1314745199, neg 260, inv 180, total 1470957009; equal: True; per entry 32428.51; trivial 2D-1 = 17
+   formula parts: forms_mul=8, table_mul=1100, table_add=495, sign_neg=260, inv=180, readL_mul=33264, readL_add=17640, readR_mul=942390, readR_add=399600, enc_add=150408104, leaf_mul=155189248, dec_add=1163919360, div_mul=45360
+formula for schedule all (1 z x 90 relabelings): total 3572192995, per entry 78752.05
+control (no division by c_z(S)): 29295 of 45360 computed entries wrong (0 expected only when every c_z(S) used is 1)
+total wall time 46.5s

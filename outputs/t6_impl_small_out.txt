@@ -1,0 +1,72 @@
+config thm_d1 (theorem parameters, d=1): kinds T6-T6-T6-T6'-T6'-T6', L=6, d=1, D=3, field GF9, row words 18, column words 18, bands 2x2, K=12
+  properties of T6: {'P1_tight': True, 'P1_blockconst': True, 'P2': True, 'P3': True, 'nE': 30}
+  properties of T6': {'P1_tight': True, 'P1_blockconst': True, 'P2': True, 'P3': True, 'nE': 30}
+  covering: 0 of 324 label pairs uncovered; relabelings used as first cover: 7 of 12
+  all 1296 entries computed: True; wrong entries: 0
+  other outputs at |S| = d in all runs checked: 5616, wrong: 0
+  control (no division by c(S)): wrong 0 of 1296
+  0 set-up         counted (mul, add, inv) = (12, 0, 0)  formula = (12, 0, 0)  EQUAL
+  1 reading        counted (mul, add, inv) = (3276, 0, 0)  formula = (3276, 0, 0)  EQUAL
+  2 encoding       counted (mul, add, inv) = (0, 5507008, 0)  formula = (0, 5507008, 0)  EQUAL
+  3 leaf products  counted (mul, add, inv) = (2239488, 0, 0)  formula = (2239488, 0, 0)  EQUAL
+  4 decoding       counted (mul, add, inv) = (0, 44789760, 0)  formula = (0, 44789760, 0)  EQUAL
+  5 read-out       counted (mul, add, inv) = (1296, 0, 0)  formula = (1296, 0, 0)  EQUAL
+  total 52540840 operations, 40540.77 per entry, = 0.8689 L^6 per entry; counts equal formula: True; 1.1 s
+RESULT {"name": "thm_d1 (theorem parameters, d=1)", "wrong": 0, "entries": 1296, "counts_equal": true, "allrun_wrong": 0}
+config rect_d2 (T6 only, L=7, d=2): kinds T6-T6-T6-T6-T6-T6-T6, L=7, d=2, D=9, field GF9, row words 35, column words 105, bands 1x1, K=42
+  properties of T6: {'P1_tight': True, 'P1_blockconst': True, 'P2': True, 'P3': True, 'nE': 30}
+  covering: 0 of 3675 label pairs uncovered; relabelings used as first cover: 17 of 42
+  all 3675 entries computed: True; wrong entries: 0
+  other outputs at |S| = d in all runs checked: 75705, wrong: 0
+  control (no division by c(S)): wrong 2304 of 3675
+  0 set-up         counted (mul, add, inv) = (357, 154, 21)  formula = (357, 154, 21)  EQUAL
+  1 reading        counted (mul, add, inv) = (306705, 160020, 0)  formula = (306705, 160020, 0)  EQUAL
+  2 encoding       counted (mul, add, inv) = (0, 94422666, 0)  formula = (0, 94422666, 0)  EQUAL
+  3 leaf products  counted (mul, add, inv) = (11757312, 0, 0)  formula = (11757312, 0, 0)  EQUAL
+  4 decoding       counted (mul, add, inv) = (0, 274337280, 0)  formula = (0, 274337280, 0)  EQUAL
+  5 read-out       counted (mul, add, inv) = (3675, 0, 0)  formula = (3675, 0, 0)  EQUAL
+  total 380988190 operations, 103670.26 per entry, = 0.8812 L^6 per entry; counts equal formula: True; 9.3 s
+RESULT {"name": "rect_d2 (T6 only, L=7, d=2)", "wrong": 0, "entries": 3675, "counts_equal": true, "allrun_wrong": 0}
+config t4_L8 (T4, char 2, L=8, d=2): kinds T4-T4-T4-T4-T4-T4-T4-T4, L=8, d=2, D=4, field GF8, row words 70, column words 70, bands 2x2, K=56
+  properties of T4: {'P1_tight': True, 'P1_blockconst': True, 'P2': True, 'P3': True, 'nE': 3}
+  covering: 0 of 4900 label pairs uncovered; relabelings used as first cover: 19 of 56
+  all 19600 entries computed: True; wrong entries: 0
+  other outputs at |S| = d in all runs checked: 544880, wrong: 0
+  control (no division by c(S)): wrong 14471 of 19600
+  0 set-up         counted (mul, add, inv) = (72, 56, 28)  formula = (72, 56, 28)  EQUAL
+  1 reading        counted (mul, add, inv) = (119700, 31920, 0)  formula = (119700, 31920, 0)  EQUAL
+  2 encoding       counted (mul, add, inv) = (0, 13446300, 0)  formula = (0, 13446300, 0)  EQUAL
+  3 leaf products  counted (mul, add, inv) = (14680064, 0, 0)  formula = (14680064, 0, 0)  EQUAL
+  4 decoding       counted (mul, add, inv) = (0, 88080384, 0)  formula = (0, 88080384, 0)  EQUAL
+  5 read-out       counted (mul, add, inv) = (19600, 0, 0)  formula = (19600, 0, 0)  EQUAL
+  total 116378124 operations, 5937.66 per entry, = 0.0227 L^6 per entry; counts equal formula: True; 18.6 s
+RESULT {"name": "t4_L8 (T4, char 2, L=8, d=2)", "wrong": 0, "entries": 19600, "counts_equal": true, "allrun_wrong": 0}
+config t4_sym (T4/T4', L=8, d=2): kinds T4-T4-T4-T4-T4'-T4'-T4'-T4', L=8, d=2, D=4, field GF8, row words 36, column words 36, bands 1x1, K=24
+  properties of T4: {'P1_tight': True, 'P1_blockconst': True, 'P2': True, 'P3': True, 'nE': 3}
+  properties of T4': {'P1_tight': True, 'P1_blockconst': True, 'P2': True, 'P3': True, 'nE': 3}
+  covering: 0 of 1296 label pairs uncovered; relabelings used as first cover: 9 of 24
+  all 1296 entries computed: True; wrong entries: 0
+  other outputs at |S| = d in all runs checked: 14256, wrong: 0
+  control (no division by c(S)): wrong 1074 of 1296
+  0 set-up         counted (mul, add, inv) = (72, 56, 28)  formula = (72, 56, 28)  EQUAL
+  1 reading        counted (mul, add, inv) = (13500, 3600, 0)  formula = (13500, 3600, 0)  EQUAL
+  2 encoding       counted (mul, add, inv) = (0, 2948750, 0)  formula = (0, 2948750, 0)  EQUAL
+  3 leaf products  counted (mul, add, inv) = (1572864, 0, 0)  formula = (1572864, 0, 0)  EQUAL
+  4 decoding       counted (mul, add, inv) = (0, 9437184, 0)  formula = (0, 9437184, 0)  EQUAL
+  5 read-out       counted (mul, add, inv) = (1296, 0, 0)  formula = (1296, 0, 0)  EQUAL
+  total 13977350 operations, 10784.99 per entry, = 0.0411 L^6 per entry; counts equal formula: True; 0.9 s
+RESULT {"name": "t4_sym (T4/T4', L=8, d=2)", "wrong": 0, "entries": 1296, "counts_equal": true, "allrun_wrong": 0}
+config t4_L10 (T4, char 2, L=10, d=2): kinds T4-T4-T4-T4-T4-T4-T4-T4-T4-T4, L=10, d=2, D=4, field GF16, row words 252, column words 252, bands 1x1, K=90
+  properties of T4: {'P1_tight': True, 'P1_blockconst': True, 'P2': True, 'P3': True, 'nE': 3}
+  covering: 0 of 63504 label pairs uncovered; relabelings used as first cover: 46 of 90
+  all 63504 entries computed: True; wrong entries: 0
+  other outputs at |S| = d in all runs checked: 2204496, wrong: 0
+  control (no division by c(S)): wrong 51644 of 63504
+  0 set-up         counted (mul, add, inv) = (110, 90, 45)  formula = (110, 90, 45)  EQUAL
+  1 reading        counted (mul, add, inv) = (481572, 114660, 0)  formula = (481572, 114660, 0)  EQUAL
+  2 encoding       counted (mul, add, inv) = (0, 180093914, 0)  formula = (0, 180093914, 0)  EQUAL
+  3 leaf products  counted (mul, add, inv) = (94371840, 0, 0)  formula = (94371840, 0, 0)  EQUAL
+  4 decoding       counted (mul, add, inv) = (0, 707788800, 0)  formula = (0, 707788800, 0)  EQUAL
+  5 read-out       counted (mul, add, inv) = (63504, 0, 0)  formula = (63504, 0, 0)  EQUAL
+  total 982914535 operations, 15477.99 per entry, = 0.0155 L^6 per entry; counts equal formula: True; 111.8 s
+RESULT {"name": "t4_L10 (T4, char 2, L=10, d=2)", "wrong": 0, "entries": 63504, "counts_equal": true, "allrun_wrong": 0}

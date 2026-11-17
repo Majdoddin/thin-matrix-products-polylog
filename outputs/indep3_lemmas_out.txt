@@ -1,0 +1,31 @@
+== Lemma 2.1, signed form (expansion over Z of the rank-4 sum into the 3x3x4 coefficient tensor)
+signed : equals T4 - E3: True ; equals T4 + E3: False
+plus-sign : equals T4 - E3: False ; equals T4 + E3: False
+  plus-sign excess entries (s,t,o,coef): [(0, 0, 3, 2), (0, 1, 3, 2), (1, 0, 3, 2)]  (x0y0w0=(0,0,3), x0y1w0=(0,1,3), x1y0w0=(1,0,3))
+  plus-sign = T4+E3 mod 2: True ; = T4-E3 mod 3: False
+== Lemma 2.3: recursion = Mult with gamma = coefficients of T4 - E3 (brute force over all u, v, w at L = 3)
+sign -1 : recursion equals brute-force Mult on all 64 outputs: True
+sign 1 : recursion equals brute-force Mult on all 64 outputs: True
+== Lemma 3.1 (signed decomposition, over Z): Mult[(r,c)] = sum_{P subset S} a[(r,P)] b[(c,S-P)] for all |r|=a0, |c|=b0
+L=5 a0=2 b0=3 signed: outputs 100, wrong over Z 0, wrong mod 3 0, wrong mod 2 0
+L=5 a0=2 b0=3 plus  : outputs 100, wrong over Z 88, wrong mod 3 56, wrong mod 2 0
+L=6 a0=3 b0=3 signed: outputs 400, wrong over Z 0, wrong mod 3 0, wrong mod 2 0
+L=6 a0=3 b0=3 plus  : outputs 400, wrong over Z 375, wrong mod 3 244, wrong mod 2 0
+L=6 a0=2 b0=4 signed: outputs 225, wrong over Z 0, wrong mod 3 0, wrong mod 2 0
+L=6 a0=2 b0=4 plus  : outputs 225, wrong over Z 208, wrong mod 3 110, wrong mod 2 0
+L=7 a0=3 b0=4 signed: outputs 1225, wrong over Z 0, wrong mod 3 0, wrong mod 2 0
+L=7 a0=3 b0=4 plus  : outputs 1225, wrong over Z 1183, wrong mod 3 754, wrong mod 2 0
+L=8 a0=4 b0=4 signed: outputs 4900, wrong over Z 0, wrong mod 3 0, wrong mod 2 0
+L=8 a0=4 b0=4 plus  : outputs 4900, wrong over Z 4806, wrong mod 3 3131, wrong mod 2 0
+L=8 a0=3 b0=5 signed: outputs 3136, wrong over Z 0, wrong mod 3 0, wrong mod 2 0
+L=8 a0=3 b0=5 plus  : outputs 3136, wrong over Z 3064, wrong mod 3 2056, wrong mod 2 0
+== Proposition 5.1: sum_P <X,a(P)> <Y,a(S-P)>prime = c(S) X.Y, over GF(3^k), random forms, all 2d-subsets
+GF(3^1) d=1 levels=4: sets x trials 18, identity wrong 0, c(S)=a(S)_(2..2) vs brute-force f-sum mismatches 0, c(S)=0 on 6; control unsigned pairing wrong 4
+GF(3^1) d=2 levels=6: sets x trials 45, identity wrong 0, c(S)=a(S)_(2..2) vs brute-force f-sum mismatches 0, c(S)=0 on 25; control unsigned pairing wrong 11
+GF(3^1) d=3 levels=7: sets x trials 14, identity wrong 0, c(S)=a(S)_(2..2) vs brute-force f-sum mismatches 0, c(S)=0 on 6; control unsigned pairing wrong 6
+GF(3^2) d=2 levels=7: sets x trials 105, identity wrong 0, c(S)=a(S)_(2..2) vs brute-force f-sum mismatches 0, c(S)=0 on 25; control unsigned pairing wrong 72
+GF(3^2) d=3 levels=8: sets x trials 56, identity wrong 0, c(S)=a(S)_(2..2) vs brute-force f-sum mismatches 0, c(S)=0 on 6; control unsigned pairing wrong 43
+GF(3^4) d=2 levels=7: sets x trials 105, identity wrong 0, c(S)=a(S)_(2..2) vs brute-force f-sum mismatches 0, c(S)=0 on 6; control unsigned pairing wrong 99
+GF(3^4) d=3 levels=9: sets x trials 168, identity wrong 0, c(S)=a(S)_(2..2) vs brute-force f-sum mismatches 0, c(S)=0 on 60; control unsigned pairing wrong 106
+GF(3^2) d=4 levels=9: sets x trials 18, identity wrong 0, c(S)=a(S)_(2..2) vs brute-force f-sum mismatches 0, c(S)=0 on 11; control unsigned pairing wrong 6
+GF(3^5) d=3 levels=8: sets x trials 28, identity wrong 0, c(S)=a(S)_(2..2) vs brute-force f-sum mismatches 0, c(S)=0 on 25; control unsigned pairing wrong 3

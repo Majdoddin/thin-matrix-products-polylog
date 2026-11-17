@@ -1,0 +1,19 @@
+options per output letter (row block of A letter, column block of B letter, error?):
+  w00: [(0, 0, 0)]
+  z01: [(0, 0, 1), (0, 1, 0), (0, 2, 1), (1, 0, 1)]
+  z02: [(0, 0, 1), (0, 2, 0), (1, 0, 1)]
+  z10: [(0, 0, 1), (1, 0, 0)]
+  z11: [(0, 0, 1), (0, 2, 1), (1, 0, 1), (1, 1, 0)]
+  z12: [(0, 1, 1), (0, 2, 1), (1, 0, 1), (1, 2, 0)]
+d= 1 L=  6 A= 2: output cell tables   3, tables with a violation 0 | controls: no column type 3, no row type 2
+d= 2 L= 12 A= 3: output cell tables   7, tables with a violation 0 | controls: no column type 7, no row type 7
+d= 3 L= 18 A= 5: output cell tables  12, tables with a violation 0 | controls: no column type 12, no row type 12
+d= 4 L= 24 A= 6: output cell tables  19, tables with a violation 0 | controls: no column type 19, no row type 19
+d= 5 L= 30 A= 8: output cell tables  27, tables with a violation 0 | controls: no column type 27, no row type 27
+d= 6 L= 36 A= 9: output cell tables  37, tables with a violation 0 | controls: no column type 37, no row type 37
+d= 7 L= 42 A=11: output cell tables  48, tables with a violation 0 | controls: no column type 48, no row type 48
+d= 8 L= 48 A=12: output cell tables  61, tables with a violation 0 | controls: no column type 61, no row type 61
+d= 9 L= 54 A=14: output cell tables  75, tables with a violation 0 | controls: no column type 75, no row type 75
+d=10 L= 60 A=15: output cell tables  91, tables with a violation 0 | controls: no column type 91, no row type 91
+d=11 L= 66 A=17: output cell tables 108, tables with a violation 0 | controls: no column type 108, no row type 108
+d=12 L= 72 A=18: output cell tables 127, tables with a violation 0 | controls: no column type 127, no row type 127

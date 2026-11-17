@@ -1,0 +1,8 @@
+d=2 L=12 words=6 left strings=306 right strings=306: targets with |S|=d 17, support not the true pairs 0, wrong values 0, control (wrong pairing) correct 1
+d=2 L=12 words=6 left strings=306 right strings=306: targets with |S|=d 20, support not the true pairs 0, wrong values 0, control (wrong pairing) correct 0
+d=2 L=12 words=6 left strings=306 right strings=306: targets with |S|=d 10, support not the true pairs 0, wrong values 0, control (wrong pairing) correct 0
+d=2 L=12 words=6 left strings=306 right strings=306: targets with |S|=d 15, support not the true pairs 0, wrong values 0, control (wrong pairing) correct 0
+d=3 L=18 words=3 left strings=1731 right strings=1731: targets with |S|=d 3, support not the true pairs 0, wrong values 0, control (wrong pairing) correct 0
+d=3 L=18 words=3 left strings=1731 right strings=1731: targets with |S|=d 4, support not the true pairs 0, wrong values 0, control (wrong pairing) correct 0
+d=3 L=18 words=3 left strings=1731 right strings=1731: targets with |S|=d 4, support not the true pairs 0, wrong values 0, control (wrong pairing) correct 0
+d=4 L=24 words=2 left strings=9042 right strings=9042: targets with |S|=d 4, support not the true pairs 0, wrong values 0, control (wrong pairing) correct 0

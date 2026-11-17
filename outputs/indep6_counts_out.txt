@@ -1,0 +1,41 @@
+d, L, per-entry total / L^6, leaf products per entry / L^5, decoding share
+  d=  1 L=   6  total/L^6=0.96006  leaf/L^5=0.22222  decoding share=0.77156
+  d=  2 L=  12  total/L^6=0.61866  leaf/L^5=0.16200  decoding share=0.87286
+  d=  3 L=  18  total/L^6=0.62994  leaf/L^5=0.17273  decoding share=0.91400
+  d=  4 L=  24  total/L^6=0.54636  leaf/L^5=0.15326  decoding share=0.93504
+  d=  5 L=  30  total/L^6=0.56676  leaf/L^5=0.16113  decoding share=0.94765
+  d=  6 L=  36  total/L^6=0.52330  leaf/L^5=0.15010  decoding share=0.95609
+  d=  7 L=  42  total/L^6=0.54083  leaf/L^5=0.15611  decoding share=0.96216
+  d=  8 L=  48  total/L^6=0.51196  leaf/L^5=0.14848  decoding share=0.96674
+  d=  9 L=  54  total/L^6=0.52668  leaf/L^5=0.15332  decoding share=0.97033
+  d= 10 L=  60  total/L^6=0.50521  leaf/L^5=0.14750  decoding share=0.97322
+  d= 11 L=  66  total/L^6=0.51776  leaf/L^5=0.15154  decoding share=0.97560
+  d= 12 L=  72  total/L^6=0.50072  leaf/L^5=0.14685  decoding share=0.97759
+  d= 20 L= 120  total/L^6=0.49179  leaf/L^5=0.14553  decoding share=0.98643
+  d= 30 L= 180  total/L^6=0.48734  leaf/L^5=0.14487  decoding share=0.99092
+  d= 31 L= 186  total/L^6=0.49226  leaf/L^5=0.14638  decoding share=0.99121
+  d= 32 L= 192  total/L^6=0.48678  leaf/L^5=0.14479  decoding share=0.99148
+  d= 33 L= 198  total/L^6=0.49142  leaf/L^5=0.14621  decoding share=0.99174
+  d= 34 L= 204  total/L^6=0.48630  leaf/L^5=0.14472  decoding share=0.99198
+  d= 35 L= 210  total/L^6=0.49068  leaf/L^5=0.14606  decoding share=0.99220
+  d= 36 L= 216  total/L^6=0.48586  leaf/L^5=0.14465  decoding share=0.99242
+  d= 37 L= 222  total/L^6=0.49002  leaf/L^5=0.14592  decoding share=0.99262
+  d= 38 L= 228  total/L^6=0.48547  leaf/L^5=0.14460  decoding share=0.99281
+  d= 39 L= 234  total/L^6=0.48942  leaf/L^5=0.14580  decoding share=0.99300
+  d= 40 L= 240  total/L^6=0.48512  leaf/L^5=0.14454  decoding share=0.99317
+  d= 50 L= 300  total/L^6=0.48379  leaf/L^5=0.14434  decoding share=0.99453
+  d= 60 L= 360  total/L^6=0.48291  leaf/L^5=0.14421  decoding share=0.99544
+  d= 70 L= 420  total/L^6=0.48228  leaf/L^5=0.14412  decoding share=0.99609
+  d= 80 L= 480  total/L^6=0.48180  leaf/L^5=0.14405  decoding share=0.99657
+  d= 90 L= 540  total/L^6=0.48143  leaf/L^5=0.14399  decoding share=0.99695
+  d=100 L= 600  total/L^6=0.48114  leaf/L^5=0.14395  decoding share=0.99726
+  d=110 L= 660  total/L^6=0.48090  leaf/L^5=0.14391  decoding share=0.99751
+  d=120 L= 720  total/L^6=0.48070  leaf/L^5=0.14388  decoding share=0.99771
+  d=130 L= 780  total/L^6=0.48053  leaf/L^5=0.14385  decoding share=0.99789
+  d=140 L= 840  total/L^6=0.48038  leaf/L^5=0.14383  decoding share=0.99804
+  d=150 L= 900  total/L^6=0.48026  leaf/L^5=0.14381  decoding share=0.99817
+max total/L^6 over d=1..150: 0.96006 at d=1; over d=2..150: 0.62994 at d=3; max leaf/L^5: 0.22222 at d=1
+first d with decoding share > 97%: 9 (share at d=9: 0.97033)
+Lemma 6.6 (d >= 31) inequalities for d = 31..150: failures none
+binomial and trinomial lower bounds also hold for d in 1..30: True
+2/log2(6) = 0.77371;  4*64/log2(6)^6 = 0.85805;  32/log2(6)^5 = 0.27725;  5 pi^3/324 = 0.47849;  3^(1/alpha6) = 216.000
